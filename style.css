@@ -74,15 +74,22 @@ header {
     min-height: 300px;
 }
 
-nav_container {
-    display: flex;
 .nav_container {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    padding: 32px 16px
+}
+.Nav_Logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    display: flex;
     align-items: center;
     padding: 32px 16px;
 }
-}
+
+
 .nav_logo img {
     content: url('Your paragraph text.png');
 }
@@ -94,6 +101,7 @@ nav_container {
     align-items: center;
     justify-content: center;
 }
+
 
 .nav_links li a {
     color: var(--primary-color-light);
