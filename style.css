@@ -7,7 +7,7 @@
     --text-color: #ffffff;
     --button-color: #ef7c10;
     --white-color: #ffffff;
-    --max-width: 1550px;
+    --max-width: 1800px;
 }
 
 /* Responsive */
@@ -273,54 +273,132 @@ header {
     transform: translateY(-5px);
 }
 
-/* Programmes */
+/* Programmes Container */
 .programmes_container {
-    max-width: var(--max-width);
-    margin: 0 auto;
-    padding: 50px 100px;
-    border: #0bb05e4f 2px solid;
-    margin-top: 0px;
-    position: relative; /* FIXED: was invalid "position: center" */
-    height: 120vh;
-    background: url("Slider1.jpg") center/cover no-repeat;
-    margin-bottom: 50px;
-    animation: changeBackground 15s infinite ease-in-out;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 200px 100px;
+  position: relative;
+  background: url("Slider1.jpg") center/cover no-repeat;
+  animation: changeBackground 15s infinite ease-in-out;
+  
 }
 
 @keyframes changeBackground {
-    0% { background-image: url("Slider1.jpg"); }
-    33% { background-image: url("Slider2.jpg"); }
-    66% { background-image: url("Slider3.jpg"); }
-    100% { background-image: url("Slider1.jpg"); }
+  0% { background-image: url("Slider1.jpg"); }
+  33% { background-image: url("Slider2.jpg"); }
+  66% { background-image: url("Slider03.jpg"); }
+  100% { background-image: url("Slider1.jpg"); }
 }
 
+/* Overlay */
 .programmes_container::after {
-    content: ""; /* FIXED: missing content */
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(41, 43, 40, 0.6);
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(22, 22, 22, 0.4);
+  z-index: 0;
+}
+
+/* Section Header */
+.programmes_header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 80px;
 }
 
 .programmes_header h2 {
-    text-align: center;
-    margin-bottom: 2px;
-    font-size: 36px;
-    color: #fe7904;
-    font-weight: 700;
-    text-shadow: #000000 0px 0px 4px;
+  font-size: 36px;
+  color: #fe7904;
+  font-weight: 700;
+  text-shadow: #000 0px 0px 4px;
+  margin: bottom 100px;;
+  
 }
 
 .programmes_header p {
-    max-width: 1200px;
-    color: #fff;
-    text-align: center;
-    margin-bottom: 30px;
-    text-shadow: #000000 0px 0px 6px;
-    font-size: 20px;
+  max-width: 1600px;
+  margin: 10px auto 0;
+  color: #fff;
+  text-shadow: #000 0px 0px 6px;
+  font-size: 18px;
 }
+
+/* Grid Layout */
+.programmes.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 30px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Programme Card */
+.programme_card {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  padding: 25px;
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  align-items: flex-start;
+}
+
+.programme_card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+}
+
+.programme_card h3 {
+  margin-bottom: 15px;
+  font-size: 22px;
+  color: #fdeede;
+  font-weight: 600;
+  align-self: center;
+  text-align: center;
+
+}
+
+/* Programme Item */
+.programme_item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.programme_item i {
+  color: #fe7904;
+  font-size: 18px;
+}
+
+/* Register Button - aligned right */
+.register_btn {
+  display: inline-block;
+  margin-top: 15px;
+  margin-left: 130px;   /* pushes button to the right */
+  color: #fe7904;
+  font-weight: bold;
+  text-decoration: none;
+  border: 1px solid #fe7904;
+  padding: 6px 16px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+
+.register_btn:hover {
+  background: #fe7904;
+  color: #fff;
+}
+
 
 /* --- continuing (about, footer, forms) --- */
 /* No major errors, just cleaned formatting below */
@@ -328,7 +406,7 @@ header {
 /* About Us */
 .about_us_container {
     max-width: 1800px;
-    margin-top: -50px;
+    margin-top: 0px;
     padding: 40px 20px;
     line-height: 1.6;
     background-color: #e8f7ee;
@@ -388,35 +466,81 @@ header {
     color: #046d04;
     font-size: 20px;
 }
-
-/* Promise Section */
-.about_Promise {
-    margin-top: 30px;
-    padding: 20px;
-    background: #aff9c35b;
-    border-radius: 30px;
-    max-width: 1200px;
+/* Promise Section - Modern WOW Look */
+.about_promise {
     margin: auto;
-    border: 2px solid #afdcb7;
+    padding: 4px 3px;
+    background: linear-gradient(135deg, #226e3498, #58e0a1a9);
+    border-radius: 24px;
+    max-width: 1400px;
+    border: 2px solid rgb(255, 255, 255);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    color: #f1f1f1;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.about_Promise h3 {
-    text-align: center;
+.about_promise:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 0px 40px rgba(0, 0, 0, 0.5);
 }
 
-.about_Promise p {
-    margin-bottom: 15px;
-    font-size: 16px;
-    text-align: center;
+.about_promise h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-.about_Promise .tagline {
-    font-weight: bold;
-    text-align: center;
-    font-size: 22px;
-    color: #f8af05;
-    margin-top: 10px;
+.about_promise p {
+    margin-bottom: 10px;
+    font-size: 17px;
+    line-height: 1.6;
+    color: #000000;
+    text-transform: uppercase;
+
 }
+
+.about_promise .tagline {
+    font-weight: 700;
+    font-size: 24px;
+    color: #fafafaf0;
+    margin-top: 20px;
+    text-shadow: 0 0 10px rgb(254, 178, 0);
+    animation: glow 2s infinite alternate;
+}
+
+/* Tagline Glow Animation */
+@keyframes glow {
+    from {
+        text-shadow: 0 0 8px rgba(248, 175, 5, 0.5);
+    }
+    to {
+        text-shadow: 0 0 18px rgba(248, 175, 5, 1);
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .about_promise {
+        padding: 30px 20px;
+    }
+
+    .about_promise h3 {
+        font-size: 24px;
+    }
+
+    .about_promise p {
+        font-size: 15px;
+    }
+
+    .about_promise .tagline {
+        font-size: 20px;
+    }
+}
+
 
 /* Footer */
 .footer {
@@ -475,22 +599,22 @@ header {
 
 .footer_section i {
     color: #009879;
-    margin-right: 8px;
+    margin:auto;
 }
 
 .footer_bar {
     background-color: #009879;
     width: 100%;
-    margin-top: -20px;
+    margin: 0;
 }
 
 .footer_bar_content {
-    max-width: 1800px;
-    margin: auto;
-    padding: 12px 16px;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 12px px;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items:center;
+    justify-content:space-between;
 }
 
 .footer_bar_content p {

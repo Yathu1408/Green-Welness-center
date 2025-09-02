@@ -130,47 +130,75 @@ function isActiveForm($formName, $activeForm) {
         </div>
     </section>
 
-    <!-- Programmes Section -->
-    <section class="programmes_container">
-        <div class="programmes_header">
-            <h2>Upcoming Programmes at Green Life Wellness Center</h2>
-            <p>
-                Join us for our upcoming wellness programmes designed to rejuvenate your
-                mind, body, and spirit. From yoga retreats to Ayurvedic workshops, we
-                offer a variety of experiences to help you connect with yourself and
-                nature.
-            </p>
-        </div>
+   <!-- Programmes Section -->
+<section class="programmes_container">
+  <div class="programmes_header">
+    <h2>Upcoming Programmes at Green Life Wellness Center</h2>
+    <p>
+      Join us for our upcoming wellness programmes designed to rejuvenate your
+      mind, body, and spirit. From yoga retreats to Ayurvedic workshops, we
+      offer a variety of experiences to help you connect with yourself and
+      nature.
+    </p>
+  </div>
 
-        <div class="programmes grid">
-            <!-- Programme 1 -->
-            <div class="programme_card">
-                <h3>Detox & Rejuvenation Retreat</h3>
-                <div class="programme_item"><i class="ri-calendar-schedule-fill"></i><span>Date: September 10 – 14, 2025</span></div>
-                <div class="programme_item"><i class="ri-user-fill"></i><span>Dr Nirmala Perera – Senior Ayurveda Specialist</span></div>
-                <div class="programme_item"><i class="ri-map-pin-2-fill"></i><span>Green Life Wellness Center, Colombo</span></div>
-                <a href="#">REGISTER</a>
-            </div>
+  <div class="programmes grid">
+    <!-- Programme 1 -->
+    <div class="programme_card">
+      <h3>Detox & Rejuvenation Retreat</h3>
+      <div class="programme_item">
+        <i class="ri-calendar-schedule-fill"></i>
+        <span>Date: September 10 – 14, 2025</span>
+      </div>
+      <div class="programme_item">
+        <i class="ri-user-fill"></i>
+        <span>Dr Nirmala Perera – Senior Ayurveda Specialist</span>
+      </div>
+      <div class="programme_item">
+        <i class="ri-map-pin-2-fill"></i>
+        <span>Green Life Wellness Center, Colombo</span>
+      </div>
+      <a href="#" class="register_btn">REGISTER</a>
+    </div>
 
-            <!-- Programme 2 -->
-            <div class="programme_card">
-                <h3>Stress Relief & Mindfulness Workshop</h3>
-                <div class="programme_item"><i class="ri-calendar-schedule-fill"></i><span>Date: September 20, 2025</span></div>
-                <div class="programme_item"><i class="ri-user-fill"></i><span>Mr. Sahan Jayawardena – Certified Yoga & Meditation Trainer</span></div>
-                <div class="programme_item"><i class="ri-map-pin-2-fill"></i><span>Green Life Wellness Center, Colombo</span></div>
-                <a href="#">REGISTER</a>
-            </div>
+    <!-- Programme 2 -->
+    <div class="programme_card">
+      <h3>Stress Relief & Mindfulness Workshop</h3>
+      <div class="programme_item">
+        <i class="ri-calendar-schedule-fill"></i>
+        <span>Date: September 20, 2025</span>
+      </div>
+      <div class="programme_item">
+        <i class="ri-user-fill"></i>
+        <span>Mr. Sahan Jayawardena – Certified Yoga & Meditation Trainer</span>
+      </div>
+      <div class="programme_item">
+        <i class="ri-map-pin-2-fill"></i>
+        <span>Green Life Wellness Center, Colombo</span>
+      </div>
+      <a href="#" class="register_btn">REGISTER</a>
+    </div>
 
-            <!-- Programme 3 -->
-            <div class="programme_card">
-                <h3>Healthy Weight Management Programme</h3>
-                <div class="programme_item"><i class="ri-calendar-schedule-fill"></i><span>Date: November 02, 2025</span></div>
-                <div class="programme_item"><i class="ri-user-fill"></i><span>Ms. Anjali De Silva – Wellness Coach & Lifestyle Consultant</span></div>
-                <div class="programme_item"><i class="ri-map-pin-2-fill"></i><span>Independence Square, Colombo 07</span></div>
-                <a href="#">REGISTER</a>
-            </div>
-        </div>
-    </section>
+    <!-- Programme 3 -->
+    <div class="programme_card">
+      <h3>Healthy Weight Management Programme</h3>
+      <div class="programme_item">
+        <i class="ri-calendar-schedule-fill"></i>
+        <span>Date: November 02, 2025</span>
+      </div>
+      <div class="programme_item">
+        <i class="ri-user-fill"></i>
+        <span>Ms. Anjali De Silva – Wellness Coach & Lifestyle Consultant</span>
+      </div>
+      <div class="programme_item">
+        <i class="ri-map-pin-2-fill"></i>
+        <span>Independence Square, Colombo 07</span>
+      </div>
+      <a href="#" class="register_btn">REGISTER</a>
+    </div>
+  </div>
+</section>
+
 
     <!-- About Section -->
     <section class="about_us_container">
@@ -245,7 +273,7 @@ function isActiveForm($formName, $activeForm) {
 
         <div class="footer_bar">
             <div class="footer_bar_content">
-                <p>&copy; 2025 Green Life Wellness Center. All rights reserved.</p>
+                <p>&copy;2025 Green Life Wellness Center. All rights reserved.</p>
                 <div class="footer_social">
                     <a href="#"><i class="ri-facebook-fill"></i></a>
                     <a href="#"><i class="ri-instagram-fill"></i></a>
@@ -280,7 +308,6 @@ function isActiveForm($formName, $activeForm) {
                 <input type="text" name="last_name" placeholder="Last Name" required>
                 <input type="number" name="mobile_number" placeholder="Mobile Number" required>
                 <input type="email" name="email" placeholder="Email" required>
-                <input type="text" name="username" placeholder="Username" required>
                 <input type="password" name="password" placeholder="Password" required>
                 <button type="submit" name="register">Sign-up</button>
                 <p>Already have an account? Click <a href="#" onclick="showForm('login_form')">Login</a></p>
