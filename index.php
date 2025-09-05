@@ -1,22 +1,8 @@
 <?php
 session_start();
-
-$errors = [
-  'login' => $_SESSION['login_error'] ?? '',
-  'register' => $_SESSION['register_error'] ?? '',
-];
-
-$activeForm = $_SESSION['active_form'] ?? 'login';
-
-session_unset();
-
-function showError($error) {
-  return !empty($error) ? "<p class='error-message'>$error</p>" : '';
-}
-
-function isActiveForm($formName, $activeForm) {
-  return $formName === $activeForm ? 'active' : '';
-}
+// Check login status
+$isLoggedIn = isset($_SESSION['customer_id']);
+$customerName = $_SESSION['customer_name'] ?? '';
 ?>
 
 <!DOCTYPE html>
@@ -29,52 +15,65 @@ function isActiveForm($formName, $activeForm) {
     <title>Green Life Wellness Center</title>
 </head>
 <body>
-    <section class="background">
-        <div class="overlay"></div>
-        <header>
-            <nav class="nav_container">
-                <!-- Left Logo -->
-                <div class="nav_logo">
-                    <img src="Logo.png" alt="Green Life Wellness Center Logo">
-                    <h1>Green Life Wellness Center</h1>
-                </div>
-
-                <!-- Middle Nav Links -->
-                <ul class="nav_links">
-                    <li class="link"><a href="#">Home</a></li>
-                    <li class="link"><a href="#">Services</a></li>
-                    <li class="link"><a href="#">Upcoming Programmes</a></li>
-                    <li class="link"><a href="#">About Us</a></li>
-                    <li class="link"><a href="#">Contact Us</a></li>
-                </ul>
-
-                <!-- Right Button -->
-                <div class="nav_button">
-                    <button class="btn" onclick="showForm('login_form')">Login</button>
-                </div>
-            </nav>
-
-            <div class="section_container header_container">
-                <div class="header_content">
-                    <h1>Welcome to Green Life Wellness Center</h1>
-                    <p>At Green Life, we believe true wellness is more than the absence of illness — it’s the harmony of mind, body, and spirit.
-                      Our mission is to guide you toward a healthier, balanced, and more fulfilling life through natural therapies, personalized care, and holistic healing.</p>
-                    
-                    <h2>Why Choose Green Life?</h2>
-                    <ul>
-                        <li>A peaceful sanctuary to recharge your energy</li>
-                        <li>Experienced practitioners who care from the heart</li>
-                        <li>Natural, safe, and holistic treatments</li>
-                        <li>Tailored wellness plans designed just for you</li>
-                    </ul>
-
-                    <h3>Our Promise</h3>
-                    <p>Every visit is more than a treatment — it’s a journey. From the moment you step in, you’ll be surrounded by warmth, compassion, and a calming environment where healing begins naturally.
-                    We’re here to listen, support, and empower you on your path to wellness.</p>
-                </div>
+<section class="background">
+    <div class="overlay"></div>
+    <header>
+        <nav class="nav_container">
+            <div class="nav_logo">
+                <img src="logo.png" alt="Green Life Wellness Center Logo">
+                <h1>Green Life Wellness Center</h1>
             </div>
-        </header>
-    </section>
+
+            <!-- Middle Nav Links -->
+            <ul class="nav_links">
+                <li class="link"><a href="#">Home</a></li>
+                <li class="link"><a href="#">Services</a></li>
+                <li class="link"><a href="#">Upcoming Programmes</a></li>
+                <li class="link"><a href="#">About Us</a></li>
+                <li class="link"><a href="#">Contact Us</a></li>
+            </ul>
+
+            <!-- Right Button -->
+            <div class="nav_button" id="navButtonContainer">
+                <?php if ($isLoggedIn): ?>
+                    <span>Welcome, <?= htmlspecialchars($customerName) ?></span>
+                    <a href="logout.php" class="btn">Logout</a>
+                <?php else: ?>
+                    <button class="btn" id="loginBtn">Login</button>
+                <?php endif; ?>
+            </div>
+        </nav>
+
+        <div class="header_container">
+            <div class="header_content">
+                <h1>Welcome to Green Life Wellness Center</h1>
+                <p>At Green Life, we believe true wellness is more than the absence of illness — it’s the harmony of mind, body, and spirit.
+                    Our mission is to guide you toward a healthier, balanced, and more fulfilling life through natural therapies, personalized care, and holistic healing.</p>
+            </div>
+        </div>
+
+        <!-- Chat Floating Button -->
+        <div class="chat-float">
+            <button id="chatButton"><i class="ri-chat-smile-2-fill"></i> Inquiry</button>
+        </div>
+
+        <!-- Chat Popup -->
+        <div id="chatPopup" class="chat-popup" style="display:none;">
+            <div class="chat-header">
+                <h3>Send Inquiry</h3>
+                <span id="closeChat">&times;</span>
+            </div>
+            <div class="chat-body">
+                <label for="chatSubject">Subject</label>
+                <input type="text" id="chatSubject" placeholder="Enter subject" required />
+                <label for="chatMessage">Message</label>
+                <textarea id="chatMessage" rows="4" placeholder="Type your message..." required></textarea>
+                <button id="sendMessage">Send</button>
+            </div>
+        </div>
+    </header>
+</section>
+
 
     <!-- Services Section -->
     <section class="service_container">
@@ -158,7 +157,7 @@ function isActiveForm($formName, $activeForm) {
         <i class="ri-map-pin-2-fill"></i>
         <span>Green Life Wellness Center, Colombo</span>
       </div>
-      <a href="#" class="register_btn">REGISTER</a>
+      <a href="#" class="register_btn" data-service="programme1" onclick="handleBooking(this)">REGISTER</a>
     </div>
 
     <!-- Programme 2 -->
@@ -176,7 +175,7 @@ function isActiveForm($formName, $activeForm) {
         <i class="ri-map-pin-2-fill"></i>
         <span>Green Life Wellness Center, Colombo</span>
       </div>
-      <a href="#" class="register_btn">REGISTER</a>
+      <a href="#" class="register_btn" data-service="programme2" onclick="handleBooking(this)">REGISTER</a>
     </div>
 
     <!-- Programme 3 -->
@@ -194,7 +193,7 @@ function isActiveForm($formName, $activeForm) {
         <i class="ri-map-pin-2-fill"></i>
         <span>Independence Square, Colombo 07</span>
       </div>
-      <a href="#" class="register_btn">REGISTER</a>
+      <a href="#" class="register_btn" data-service="programme3" onclick="handleBooking(this)">REGISTER</a>
     </div>
   </div>
 </section>
@@ -283,39 +282,209 @@ function isActiveForm($formName, $activeForm) {
         </div>
     </footer>
 
-    <!-- Login Form -->
-    <section class="login_container">
-        <div class="form_box <?= isActiveForm('Login', $activeForm); ?>" id="login_form">
-            <form action="login_register.php" method="post">
-                <h2>Login</h2>
-                <?= showError($errors['login']); ?>
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <button type="submit" name="login">Login</button>
-                <p>You don’t have an account? Click <a href="#" onclick="showForm('signup_form')">Sign-up</a></p>
-            </form>
-            <div class="back_homepage"><a href="#">Back to homepage</a></div>
-        </div>
-    </section>
+   
 
-    <!-- Signup Form -->
-    <section class="signup_container">
-        <div class="form_box  <?= isActiveForm('register', $activeForm); ?>" id="signup_form">
-            <form action="login_register.php" method="post">
-                <h2>Sign-up</h2>
-                <?= showError($errors['register']); ?>
-                <input type="text" name="first_name" placeholder="First Name" required>
-                <input type="text" name="last_name" placeholder="Last Name" required>
-                <input type="number" name="mobile_number" placeholder="Mobile Number" required>
-                <input type="email" name="email" placeholder="Email" required>
-                <input type="password" name="password" placeholder="Password" required>
-                <button type="submit" name="register">Sign-up</button>
-                <p>Already have an account? Click <a href="#" onclick="showForm('login_form')">Login</a></p>
-            </form>
-            <div class="back_homepage"><a href="#">Back to homepage</a></div>
-        </div>
-    </section>
+<section class="Service1"> 
+  <div class="Service1_Content">
+    <h1>AYURVEDIC THERAPY</h1>
+    <p>
+      Experience the timeless healing power of Ayurveda. Our therapies combine
+      herbal oils, detox treatments, and natural healing techniques to bring
+      balance to your body and mind.
+    </p>
 
-    <script src="script.js"></script>
+    <div class="benefit-box">
+      <div class="card">
+        <h3>Benefits</h3>
+        <ul>
+          <li>Detoxifies and rejuvenates the body</li>
+          <li>Relieves stress, anxiety, and fatigue</li>
+          <li>Promotes better sleep and relaxation</li>
+          <li>Strengthens immunity and restores energy</li>
+        </ul>
+      </div>
+      <a href="#" class="book-btn" data-service="Ayurveda" onclick="handleBooking(this)">BOOK NOW</a>
+    </div>
+  </div>
+
+  <div class="hero-image-wrapper">
+    <img src="S1.jpg" alt="Ayurveda Therapy" class="hero-image">
+    <img src="Leaves4.png" alt="Decoration Leaf" class="decor-leaf leaf-left">
+    <img src="Leaves3.png" alt="Decoration Leaf" class="decor-leaf leaf-right">
+    <img src="Leaves1.png" alt="Decoration Flower" class="decor-flower">
+  </div>
+</section>
+
+<section class="Service2"> 
+  <div class="Service2_Content">
+    <h1>YOGA & MEDITATION</h1>
+    <p>
+      Enhance your well-being through guided yoga sessions and mindful meditation practices.
+      Whether you’re a beginner or advanced, our classes help you connect within and live with balance.
+    </p>
+
+    <div class="benefit-box">
+      <div class="card">
+        <h3>Benefits</h3>
+        <ul>
+          <li>Improves flexibility, strength, and posture</li>
+          <li>Reduces stress and promotes mental clarity</li>
+          <li>Boosts immunity and energy levels</li>
+          <li>Encourages mindfulness and inner peace</li>
+        </ul>
+      </div>
+     <a href="#" class="book-btn" data-service="Yoga" onclick="handleBooking(this)">BOOK NOW</a>
+    </div>
+  </div>
+
+  <div class="hero-image-wrapper">
+    <img src="S2.jpg" alt="Yoga and Meditation" class="hero-image">
+    <img src="Leaves4.png" alt="Decoration Leaf" class="decor-leaf leaf-left">
+    <img src="Leaves3.png" alt="Decoration Leaf" class="decor-leaf leaf-right">
+    <img src="Leaves1.png" alt="Decoration Flower" class="decor-flower">
+  </div>
+</section>
+
+<section class="Service3"> 
+  <div class="Service3_Content">
+    <h1>NUTRITION & DIET CONSULTATION</h1>
+    <p>
+      Transform your lifestyle with a personalized diet plan crafted by our wellness experts.
+      We design nutrition strategies tailored to your body type, health goals, and daily routine.
+    </p>
+
+    <div class="benefit-box">
+      <div class="card">
+        <h3>Benefits</h3>
+        <ul>
+          <li>Supports healthy weight management</li>
+          <li>Improves digestion and metabolism</li>
+          <li>Enhances energy and productivity</li>
+          <li>Prevents lifestyle-related diseases</li>
+        </ul>
+      </div>
+      <a href="#" class="book-btn" data-service="Nutrition" onclick="handleBooking(this)">BOOK NOW</a>
+    </div>
+  </div>
+
+  <div class="hero-image-wrapper">
+    <img src="S3.jpg" alt="Nutrition and Diet" class="hero-image">
+    <img src="Leaves4.png" alt="Decoration Leaf" class="decor-leaf leaf-left">
+    <img src="Leaves3.png" alt="Decoration Leaf" class="decor-leaf leaf-right">
+    <img src="Leaves1.png" alt="Decoration Flower" class="decor-flower">
+  </div>
+</section>
+
+<section class="Service4"> 
+  <div class="Service4_Content">
+    <h1>PHYSIOTHERAPY</h1>
+    <p>
+      Regain strength, mobility, and confidence with our specialized physiotherapy treatments.
+      We use evidence-based techniques to treat pain, restore movement, and support recovery.
+    </p>
+
+    <div class="benefit-box">
+      <div class="card">
+        <h3>Benefits</h3>
+        <ul>
+          <li>Reduces chronic pain and discomfort</li>
+          <li>Accelerates recovery from injuries or surgeries</li>
+          <li>Improves mobility, balance, and coordination</li>
+          <li>Prevents future injuries with corrective exercises</li>
+        </ul>
+      </div>
+      <a href="#" class="book-btn" data-service="Physiotherapy" onclick="handleBooking(this)">BOOK NOW</a>
+    </div>
+  </div>
+
+  <div class="hero-image-wrapper">
+    <img src="S4.jpg" alt="Physiotherapy" class="hero-image">
+    <img src="Leaves4.png" alt="Decoration Leaf" class="decor-leaf leaf-left">
+    <img src="Leaves3.png" alt="Decoration Leaf" class="decor-leaf leaf-right">
+    <img src="Leaves1.png" alt="Decoration Flower" class="decor-flower">
+  </div>
+</section>
+<script>
+
+<!-- Booking Script -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
+
+    window.handleBooking = function() {
+        const authFrame = document.getElementById('authFrame');
+        const loginModal = document.getElementById('loginModal');
+        if (!isLoggedIn) {
+            authFrame.src = "login.php";
+            loginModal.style.display = "flex";
+        } else {
+            window.location.href = "booking.php";
+        }
+    };
+
+ // Login/Register Modal
+    const loginBtn = document.getElementById("loginBtn");
+    const modal = document.getElementById("loginModal");
+    const closeBtn = document.querySelector(".closeBtn");
+    const authFrame = document.getElementById("authFrame");
+    const navButtonContainer = document.getElementById("navButtonContainer");
+
+    if(loginBtn){
+        loginBtn.addEventListener("click", function() {
+            authFrame.src = "login.php";
+            modal.style.display = "flex";
+        });
+    }
+
+    closeBtn.addEventListener("click", function() {
+        modal.style.display = "none";
+    });
+
+    window.addEventListener("click", function(e) {
+        if (e.target === modal) modal.style.display = "none";
+    });
+
+    // Smooth modal switching & success update
+    window.addEventListener("message", function(event) {
+        if (event.data === "showRegister") {
+            authFrame.src = "register.php";
+        }
+        if (event.data === "showLogin") {
+            authFrame.src = "login.php";
+        }
+        if (event.data.type === "authSuccess") {
+            // Close modal
+            modal.style.display = "none";
+
+            // Update nav button dynamically without reload
+            navButtonContainer.innerHTML = `
+                <span>Welcome, ${event.data.name}</span>
+                <a href="logout.php" class="btn">Logout</a>
+            `;
+        }
+    });
+
+    // Chat popup functionality
+    const chatButton = document.getElementById("chatButton");
+    const chatPopup = document.getElementById("chatPopup");
+    const closeChat = document.getElementById("closeChat");
+
+    chatButton.addEventListener("click", () => chatPopup.style.display = "block");
+    closeChat.addEventListener("click", () => chatPopup.style.display = "none");
+    window.addEventListener("click", function(e) {
+        if (e.target === chatPopup) chatPopup.style.display = "none";
+    });
+});
+</script>
+
+<!-- Login/Register Modal (Single Instance) -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <span class="closeBtn">&times;</span>
+        <iframe id="authFrame" src="login.php" frameborder="0"></iframe>
+    </div>
+</div>
+</body>
+</html>
 </body>
 </html>
