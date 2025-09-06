@@ -31,7 +31,7 @@ $customerName = $_SESSION['customer_name'] ?? '';
                 <li class="link"><a href="#Service">Services</a></li>
                 <li class="link"><a href="#Programmes">Upcoming Programmes</a></li>
                 <li class="link"><a href="#About">About Us</a></li>
-                <li class="link"><a href="#Contact Us">Contact Us</a></li>
+                <li class="link"><a href="#Contact">Contact Us</a></li>
             </ul>
 
           

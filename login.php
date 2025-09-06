@@ -1,6 +1,8 @@
 <?php
 session_start();
-require 'db.php';
+require 'db.php'; // $pdo PDO connection
+
+$error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'] ?? '';
@@ -8,20 +10,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt = $pdo->prepare("SELECT * FROM customers WHERE email = ?");
     $stmt->execute([$email]);
-    $user = $stmt->fetch();
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['customer_id'] = $user['id'];
-        $_SESSION['customer_name'] = $user['name'];
+        // Store session variables
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['name'] = $user['name'];       // consistent naming
+        $_SESSION['role'] = $user['role'];
 
+        // Decide where to go based on role
+        if ($user['role'] === 'admin') {
+            $redirectPage = "admin_dashboard.php";
+        } elseif ($user['role'] === 'therapist') {
+            $redirectPage = "therapist_dashboard.php";
+        } else {
+            $redirectPage = "customer_dashboard.php";
+        }
+
+        // Send success event to parent if inside iframe AND redirect
         echo "<script>
-            window.parent.postMessage({ type: 'authSuccess', name: '".addslashes($user['name'])."' }, '*');
+            window.parent.postMessage({
+                type: 'authSuccess',
+                name: '".addslashes($user['name'])."',
+                role: '".$user['role']."',
+                redirect: '".$redirectPage."'
+            }, '*');
+            window.location.href = '".$redirectPage."';
         </script>";
         exit;
     } else {
         $error = "Invalid email or password";
     }
 }
+
 
 ?>
 <!DOCTYPE html>
