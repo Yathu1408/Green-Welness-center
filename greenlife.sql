@@ -2,14 +2,15 @@
 CREATE DATABASE IF NOT EXISTS greenlife;
 USE greenlife;
 
--- Customers Table
 CREATE TABLE customers (
-    customer_id INT AUTO_INCREMENT PRIMARY KEY,
-    Full_Name VARCHAR(100) NOT NULL,
-    Legal_id VARCHAR(100) UNIQUE NOT NULL,
-    Mobile VARCHAR(20) UNIQUE NOT NULL,
-    email VARCHAR(150) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    legalid VARCHAR(20)NOT NULL UNIQUE,
+    phone VARCHAR(20),
+    email VARCHAR(100) ,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(20) DEFAULT 'customer',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Bookings Table
@@ -20,8 +21,8 @@ CREATE TABLE bookings (
     booking_date DATE NOT NULL,
     booking_time TIME NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE
-);
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE 
+)ENGINE=InnoDB;
 
 -- Table for user messages
 CREATE TABLE user_messages (
@@ -30,8 +31,8 @@ CREATE TABLE user_messages (
     subject VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE
-);
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+)ENGINE=InnoDB;
 
 -- Table for admin messages
 CREATE TABLE admin_messages (
@@ -41,9 +42,6 @@ CREATE TABLE admin_messages (
     message TEXT NOT NULL,
     status ENUM('pending','replied') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE
-);
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE
+)ENGINE=InnoDB;
 
--- Insert sample customer
-INSERT INTO customers (Full_Name, Legal_id, Mobile, email, password)
-VALUES ('Yathushan Asoker', '981070747V', '0750353808', 'yathushan666@gmail.com', '12345');

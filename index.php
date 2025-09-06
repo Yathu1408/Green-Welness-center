@@ -4,7 +4,6 @@ session_start();
 $isLoggedIn = isset($_SESSION['customer_id']);
 $customerName = $_SESSION['customer_name'] ?? '';
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +14,9 @@ $customerName = $_SESSION['customer_name'] ?? '';
     <title>Green Life Wellness Center</title>
 </head>
 <body>
-<section class="background">
+
+        <!-- Landing Page-->
+<section id="Home" class="background">
     <div class="overlay"></div>
     <header>
         <nav class="nav_container">
@@ -24,19 +25,19 @@ $customerName = $_SESSION['customer_name'] ?? '';
                 <h1>Green Life Wellness Center</h1>
             </div>
 
-            <!-- Middle Nav Links -->
+            <!-- Homepage links -->
             <ul class="nav_links">
-                <li class="link"><a href="#">Home</a></li>
-                <li class="link"><a href="#">Services</a></li>
-                <li class="link"><a href="#">Upcoming Programmes</a></li>
-                <li class="link"><a href="#">About Us</a></li>
-                <li class="link"><a href="#">Contact Us</a></li>
+                <li class="link"><a href="#Home">Home</a></li>
+                <li class="link"><a href="#Service">Services</a></li>
+                <li class="link"><a href="#Programmes">Upcoming Programmes</a></li>
+                <li class="link"><a href="#About">About Us</a></li>
+                <li class="link"><a href="#Contact Us">Contact Us</a></li>
             </ul>
 
-            <!-- Right Button -->
+          
             <div class="nav_button" id="navButtonContainer">
                 <?php if ($isLoggedIn): ?>
-                    <span>Welcome, <?= htmlspecialchars($customerName) ?></span>
+                    <span>Hi, <?= htmlspecialchars($customerName) ?></span>
                     <a href="logout.php" class="btn">Logout</a>
                 <?php else: ?>
                     <button class="btn" id="loginBtn">Login</button>
@@ -52,12 +53,12 @@ $customerName = $_SESSION['customer_name'] ?? '';
             </div>
         </div>
 
-        <!-- Chat Floating Button -->
+        <!-- Chat Popup -->
         <div class="chat-float">
             <button id="chatButton"><i class="ri-chat-smile-2-fill"></i> Inquiry</button>
         </div>
 
-        <!-- Chat Popup -->
+       
         <div id="chatPopup" class="chat-popup" style="display:none;">
             <div class="chat-header">
                 <h3>Send Inquiry</h3>
@@ -76,7 +77,7 @@ $customerName = $_SESSION['customer_name'] ?? '';
 
 
     <!-- Services Section -->
-    <section class="service_container">
+    <section id="Service"class="service_container">
         <div class="service_header">
             <div class="service_header_content">
                 <h2 class="service_header">Ways We Support You</h2>
@@ -90,7 +91,7 @@ $customerName = $_SESSION['customer_name'] ?? '';
                         <h3>Ayurvedic Therapy</h3>
                         <p>Experience natural healing through Ayurvedic Therapy — a time-honored approach that balances mind, body, and spirit using herbal
                              treatments, massage, and personalized care rooted in ancient wisdom.</p>
-                        <a href="#">More</a>
+                        <a href="#Service1" onclick="showService('Service1')">More</a>
                     </div>
 
                     <div class="service_card">
@@ -98,7 +99,7 @@ $customerName = $_SESSION['customer_name'] ?? '';
                         <h3>Yoga and Meditation</h3>
                         <p>Experience the perfect balance of mind and body through guided yoga postures and 
                             meditation practices that promote relaxation, flexibility, and inner peace.</p>
-                        <a href="#">More</a>
+                        <a href="#Service2" onclick="showService('Service2')">More</a>
                     </div>
 
                     <div class="service_card">
@@ -106,7 +107,7 @@ $customerName = $_SESSION['customer_name'] ?? '';
                         <h3>Nutrition and Diet Consultation</h3>
                         <p>Get personalized diet plans and expert nutrition 
                             advice to improve your health, boost energy, and achieve your wellness goals.</p>
-                        <a href="#">More</a>
+                        <a href="#Service3" onclick="showService('Service3')">More</a>
                     </div>
 
                     <div class="service_card">
@@ -114,7 +115,7 @@ $customerName = $_SESSION['customer_name'] ?? '';
                         <h3>Physiotherapy</h3>
                         <p>Restore mobility, relieve pain, and strengthen your body with professional physiotherapy 
                             treatments designed for recovery and long-term well-being.</p>
-                        <a href="#">More</a>
+                        <a href="#Service4" onclick="showService('Service4')">More</a>
                     </div>
 
                     <div class="service_card">
@@ -122,7 +123,7 @@ $customerName = $_SESSION['customer_name'] ?? '';
                         <h3>Wellness Programmes</h3>
                         <p>Join our holistic wellness programmes that combine Ayurveda, fitness, 
                             stress management, and lifestyle guidance for a healthier and happier you.</p>
-                        <a href="#">More</a>
+                        <a href="#Programmes" onclick="showService('Programmes')">More</a>
                     </div>
                 </div>
             </div>
@@ -130,7 +131,7 @@ $customerName = $_SESSION['customer_name'] ?? '';
     </section>
 
    <!-- Programmes Section -->
-<section class="programmes_container">
+<section id="Programmes" class="programmes_container">
   <div class="programmes_header">
     <h2>Upcoming Programmes at Green Life Wellness Center</h2>
     <p>
@@ -200,7 +201,7 @@ $customerName = $_SESSION['customer_name'] ?? '';
 
 
     <!-- About Section -->
-    <section class="about_us_container">
+    <section id="About"class="about_us_container">
         <div class="about_us">
             <h2>About Green Life Wellness Center</h2>
             <div class="about_image">
@@ -235,7 +236,7 @@ $customerName = $_SESSION['customer_name'] ?? '';
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
+    <footer id="Contact"class="footer">
         <div class="footer_content">
             <div class="footer_column about">
                 <h3>Green Life Wellness Center</h3>
@@ -282,9 +283,10 @@ $customerName = $_SESSION['customer_name'] ?? '';
         </div>
     </footer>
 
-   
+    <!-- Subpages for services -->
 
-<section class="Service1"> 
+
+<section id="Service1"class="Service1 hidden"> 
   <div class="Service1_Content">
     <h1>AYURVEDIC THERAPY</h1>
     <p>
@@ -313,9 +315,10 @@ $customerName = $_SESSION['customer_name'] ?? '';
     <img src="Leaves3.png" alt="Decoration Leaf" class="decor-leaf leaf-right">
     <img src="Leaves1.png" alt="Decoration Flower" class="decor-flower">
   </div>
+  <a href="#" class="back-btn" onclick="goBack()">← Back to Home</a>
 </section>
 
-<section class="Service2"> 
+<section id="Service2"class="Service2 hidden"> 
   <div class="Service2_Content">
     <h1>YOGA & MEDITATION</h1>
     <p>
@@ -343,9 +346,10 @@ $customerName = $_SESSION['customer_name'] ?? '';
     <img src="Leaves3.png" alt="Decoration Leaf" class="decor-leaf leaf-right">
     <img src="Leaves1.png" alt="Decoration Flower" class="decor-flower">
   </div>
+  <a href="#" class="back-btn" onclick="goBack()">← Back to Home</a>
 </section>
 
-<section class="Service3"> 
+<section id="Service3" class="Service3 hidden"> 
   <div class="Service3_Content">
     <h1>NUTRITION & DIET CONSULTATION</h1>
     <p>
@@ -373,9 +377,10 @@ $customerName = $_SESSION['customer_name'] ?? '';
     <img src="Leaves3.png" alt="Decoration Leaf" class="decor-leaf leaf-right">
     <img src="Leaves1.png" alt="Decoration Flower" class="decor-flower">
   </div>
+  <a href="#" class="back-btn" onclick="goBack()">← Back to Home</a>
 </section>
 
-<section class="Service4"> 
+<section id="Service4" class="Service4 hidden"> 
   <div class="Service4_Content">
     <h1>PHYSIOTHERAPY</h1>
     <p>
@@ -403,26 +408,13 @@ $customerName = $_SESSION['customer_name'] ?? '';
     <img src="Leaves3.png" alt="Decoration Leaf" class="decor-leaf leaf-right">
     <img src="Leaves1.png" alt="Decoration Flower" class="decor-flower">
   </div>
+  <a href="#" class="back-btn" onclick="goBack()">← Back to Home</a>
 </section>
+
+
+
 <script>
-
-<!-- Booking Script -->
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    const isLoggedIn = <?php echo $isLoggedIn ? 'true' : 'false'; ?>;
-
-    window.handleBooking = function() {
-        const authFrame = document.getElementById('authFrame');
-        const loginModal = document.getElementById('loginModal');
-        if (!isLoggedIn) {
-            authFrame.src = "login.php";
-            loginModal.style.display = "flex";
-        } else {
-            window.location.href = "booking.php";
-        }
-    };
-
- // Login/Register Modal
+document.addEventListener("DOMContentLoaded", () => {
     const loginBtn = document.getElementById("loginBtn");
     const modal = document.getElementById("loginModal");
     const closeBtn = document.querySelector(".closeBtn");
@@ -430,22 +422,21 @@ document.addEventListener("DOMContentLoaded", function() {
     const navButtonContainer = document.getElementById("navButtonContainer");
 
     if(loginBtn){
-        loginBtn.addEventListener("click", function() {
+        loginBtn.addEventListener("click", () => {
             authFrame.src = "login.php";
             modal.style.display = "flex";
         });
     }
 
-    closeBtn.addEventListener("click", function() {
+    closeBtn.addEventListener("click", () => {
         modal.style.display = "none";
     });
 
-    window.addEventListener("click", function(e) {
+    window.addEventListener("click", (e) => {
         if (e.target === modal) modal.style.display = "none";
     });
 
-    // Smooth modal switching & success update
-    window.addEventListener("message", function(event) {
+    window.addEventListener("message", (event) => {
         if (event.data === "showRegister") {
             authFrame.src = "register.php";
         }
@@ -453,38 +444,108 @@ document.addEventListener("DOMContentLoaded", function() {
             authFrame.src = "login.php";
         }
         if (event.data.type === "authSuccess") {
-            // Close modal
             modal.style.display = "none";
-
-            // Update nav button dynamically without reload
             navButtonContainer.innerHTML = `
-                <span>Welcome, ${event.data.name}</span>
+                <span>Hi, ${event.data.name}</span>
                 <a href="logout.php" class="btn">Logout</a>
             `;
         }
     });
-
-    // Chat popup functionality
-    const chatButton = document.getElementById("chatButton");
-    const chatPopup = document.getElementById("chatPopup");
-    const closeChat = document.getElementById("closeChat");
-
-    chatButton.addEventListener("click", () => chatPopup.style.display = "block");
-    closeChat.addEventListener("click", () => chatPopup.style.display = "none");
-    window.addEventListener("click", function(e) {
-        if (e.target === chatPopup) chatPopup.style.display = "none";
-    });
 });
 </script>
 
-<!-- Login/Register Modal (Single Instance) -->
-<div id="loginModal" class="modal">
-    <div class="modal-content">
-        <span class="closeBtn">&times;</span>
-        <iframe id="authFrame" src="login.php" frameborder="0"></iframe>
+<script>
+// Chat popup functionality
+const chatButton = document.getElementById("chatButton");
+const chatPopup = document.getElementById("chatPopup");
+const closeChat = document.getElementById("closeChat");
+
+chatButton.addEventListener("click", () => chatPopup.style.display = "block");
+closeChat.addEventListener("click", () => chatPopup.style.display = "none");
+window.addEventListener("click", function(e) {
+    if (e.target === chatPopup) chatPopup.style.display = "none";
+});
+
+</script>
+
+<!-- Login/Register Modal -->
+<div id="loginModal" class="modal" style="
+    display:none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 120%;
+    background-color: rgba(173, 173, 173, 0.08);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+">
+    <div class="modal-content" style="
+        background: #65796a5f;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 500px;
+        width: 90%;
+        max-hight: 800px;
+        hight: 100%;
+        position: relative;
+    ">
+        <span class="closeBtn" style="
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+        ">&times;</span>
+        <iframe id="authFrame" style="width:100%; height:400px; border:none;"></iframe>
     </div>
 </div>
-</body>
-</html>
+
+
+   
+
+<script>
+function showService(serviceId) {
+  if (serviceId === "Programmes") {
+    // Show all main pages (don't hide anything)
+    document.querySelectorAll('#Home, #Service, #About, #Contact, #Programmes')
+      .forEach(section => section.classList.remove('hidden'));
+
+    // Scroll to Programmes section
+    document.getElementById('Programmes').scrollIntoView({ behavior: 'smooth' });
+    return;
+  }
+
+  // Normal flow: hide all main pages except Programmes
+  document.querySelectorAll('#Home, #Service, #About,#Programmes, #Contact')
+    .forEach(section => section.classList.add('hidden'));
+
+  // Hide all subpages
+  document.querySelectorAll('.Service1, .Service2, .Service3, .Service4')
+    .forEach(section => section.classList.add('hidden'));
+
+  // Show the selected subpage
+  const selected = document.getElementById(serviceId);
+  if (selected) {
+    selected.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+function goBack() {
+  // Hide all subpages
+  document.querySelectorAll('.Service1, .Service2, .Service3, .Service4')
+    .forEach(section => section.classList.add('hidden'));
+
+  // Show all main pages
+  document.querySelectorAll('#Home, #Service, #About, #Contact, #Programmes')
+    .forEach(section => section.classList.remove('hidden'));
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+
 </body>
 </html>

@@ -28,7 +28,9 @@
     padding: 0;
     box-sizing: border-box;
 }
-
+html {
+    scroll-behavior: smooth;
+}    
 body {
     font-family: "Roboto", sans-serif;
 }
@@ -122,7 +124,24 @@ header {
 }
 
 .btn:hover {
-    background-color: #74ea05;
+    background-color: #418501;
+}
+
+.nav_button span {
+  font-size: 16px;
+  color: #149201;
+  font-weight: bold;
+}
+.nav_button span.btn  {
+    padding: 8px 20px;
+    border: none;
+    font-size: 16px;
+    color: var(--white-color);
+    background-color: var(--button-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-decoration: none;
 }
 
 .header_container {
@@ -1404,64 +1423,113 @@ header {
   100% { transform: translate(-50%, -50%) scale(1); }
 }
 
-
-
-/* Modal Background */
-.modal {
-  display: none; 
-  position: fixed; 
-  z-index: 9999; 
-  left: 0;
-  top: 0;
-  width: 100%; 
-  height: 100%; 
-  background: rgba(80, 85, 79, 0.502); 
-  justify-content: center;
-  align-items: center;
+.back-btn {
+  position: absolute;       /* position relative to parent */
+  top: 20px;                /* distance from top */
+  right: 20px;              /* distance from right */
+  padding: 10px 20px;
+  background: #ff7300;
+  color: #fff;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: bold;
 }
 
-/* Modal Content Box */
-.modal {
-  display: none; 
-  position: fixed; 
-  z-index: 9999; 
-  left: 0;
-  top: 0;
-  width: 100%; 
-  height: 100%; 
-  background: rgba(0, 0, 0, 0.6); 
-  justify-content: center;
-  align-items: center;
+.back-btn:hover {
+  background: #e05d00;
 }
 
-.modal-content {
-  background: #788a7e96;
-  border-radius: 10px;
-  width: 550px;
-  max-width: 100%;
-  padding: 0;
-  position: relative;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-  animation: fadeIn 0.3s ease;
+
+
+/* Modal overlay */
+#loginModal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.67); /* semi-transparent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px); /* soft blur behind modal */
 }
 
-.closeBtn {
-  position: absolute;
+/* Modal content box */
+#loginModal .modal-content {
+    background: rgba(101, 121, 106, 0.38); /* semi-transparent modal background */
+    padding: 20px 30px;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    backdrop-filter: blur(10px); /* frosted glass effect */
+}
+
+/* Close button */
+#loginModal .closeBtn {
+   position: absolute;
   right: 15px;
   top: 10px;
   font-size: 25px;
   font-weight: bold;
-  color: #333;
+  color: #555;
   cursor: pointer;
+  transition: color 0.2s
 }
 
-.modal-content iframe {
+#loginModal .closeBtn:hover {
+    color: #16653d;
+}
+
+/* Iframe styling */
+#loginModal iframe {
   width: 100%;
-  height: 450px;
+  height: 450px; /* fits your login/register form */
   border: none;
+  border-radius: 8px;
+  background: #dfe6e1c0;
+
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Optional: Responsive adjustments */
+@media (max-width: 600px) {
+    #loginModal .modal-content {
+        padding: 15px 20px;
+    }
+
+    #loginModal iframe {
+        height: 350px;
+    }
 }
+
+.hidden {
+  display: none !important;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+  .modal-content iframe {
+    height: 400px;
+  }
+}
+
+/* Optional: smooth fade-out effect when closing modal */
+.modal.fade-out {
+  animation: fadeOut 0.3s forwards;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-20px); }
+}
+
+
