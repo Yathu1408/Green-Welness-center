@@ -21,6 +21,7 @@ $stmt = $pdo->prepare("
     WHERE b.therapist_id = ?
     ORDER BY b.booking_date DESC
 ");
+
 $stmt->execute([$therapist_id]);
 $appointments = $stmt->fetchAll(PDO::FETCH_ASSOC);
 

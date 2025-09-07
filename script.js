@@ -25,4 +25,39 @@ function showService(serviceClass) {
         selectedService.scrollIntoView({ behavior: 'smooth' });
     }
 }
+function submitBooking(formId, service) {
+    const form = document.getElementById(formId);
+    const date = form.querySelector('select[name="booking_date"]').value;
+    const time = form.querySelector('select[name="booking_time"]').value;
+
+    if(!date || !time) {
+        alert("Please select both date and time.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('service', service);
+    formData.append('booking_date', date);
+    formData.append('booking_time', time);
+
+    fetch('save_booking.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        if(data.status === 'success') {
+            form.reset();
+            form.parentElement.classList.add('hidden');
+        }
+    });
+}
+function showBookingSuccess() {
+    document.getElementById('bookingSuccessModal').style.display = 'block';
+}
+
+function closeModal() {
+    document.getElementById('bookingSuccessModal').style.display = 'none';
+}
 

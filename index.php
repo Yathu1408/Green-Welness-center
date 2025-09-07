@@ -307,6 +307,7 @@ if ($isLoggedIn && $userRole !== 'customer') {
       balance to your body and mind.
     </p>
 
+    <!-- Benefit Box -->
     <div class="benefit-box">
       <div class="card">
         <h3>Benefits</h3>
@@ -317,13 +318,19 @@ if ($isLoggedIn && $userRole !== 'customer') {
           <li>Strengthens immunity and restores energy</li>
         </ul>
       </div>
+
+      <!-- Book Now Button -->
       <a href="#" class="book-btn" data-service="Ayurveda" onclick="handleBooking(this)">BOOK NOW</a>
     </div>
 
     <!-- Booking Form Container -->
     <div id="bookingFormContainer" class="hidden">
       <?php
-      // PHP code to generate dates and times
+
+      session_start();
+      require 'db.php'; // your PDO connection
+
+      // Generate next 4 Mondays
       $weeksToShow = 4;
       $dates = [];
       $today = new DateTime();
@@ -336,133 +343,69 @@ if ($isLoggedIn && $userRole !== 'customer') {
           $nextMonday->modify('+1 week');
       }
 
+      // Time slots
       $startHour = 10;
       $endHour = 19;
       $timeSlots = [];
       for ($hour = $startHour; $hour <= $endHour; $hour++) {
-          $timeSlots[] = sprintf("%02d:00", $hour);
+          $timeSlots[] = sprintf("%02d:00:00", $hour);
       }
 
       // Handle form submission
       if ($_SERVER['REQUEST_METHOD'] === 'POST' 
-         && isset($_POST['booking_service']) 
-         && $_POST['booking_service'] === 'Ayurveda') {
+          && ($_POST['service'] ?? '') === 'Ayurveda') {
 
-           if(!isset($_SESSION['customer_id'])){
-          // Customer is not logged in → block submission
-          die("<p class='error'>You must login to submit a booking. <a href='login.php'>Login here</a></p>");
+        if(!isset($_SESSION['customer_id'])){
+            die("<p class='error'>You must login to submit a booking. <a href='login.php'>Login here</a></p>");
         }
-          $customer_id = $_SESSION['customer_id'] ?? null;
-          $booking_date = $_POST['booking_date'] ?? '';
-          $booking_time = $_POST['booking_time'] ?? '';
 
-          if ($booking_date && $booking_time) {
-        $stmt = $pdo->prepare("INSERT INTO bookings (customer_id, service, booking_date, booking_time) VALUES (?, ?, ?, ?)");
-        if ($stmt->execute([$customer_id, 'Ayurveda', $booking_date, $booking_time])) {
-            echo "<p class='message'>Booking confirmed for $booking_date at $booking_time.</p>";
+        $customer_id = $_SESSION['customer_id'];
+        $booking_date = $_POST['booking_date'] ?? '';
+        $booking_time = $_POST['booking_time'] ?? '';
+
+        // Map service to therapist_id (example)
+        $therapists = [
+          'Ayurveda' => 1 // replace 1 with actual therapist ID
+        ];
+        $therapist_id = $therapists['Ayurveda'];
+
+        if ($booking_date && $booking_time) {
+            $stmt = $pdo->prepare("INSERT INTO bookings (customer_id, therapist_id, service, booking_date, booking_time) VALUES (?, ?, ?, ?, ?)");
+            if ($stmt->execute([$customer_id, $therapist_id, 'Ayurveda', $booking_date, $booking_time])) {
+                echo "<p class='message'>Booking confirmed for " . date('l, F j, Y', strtotime($booking_date)) . " at " . date('h:i A', strtotime($booking_time)) . ".</p>";
+            } else {
+                echo "<p class='error'>Failed to save booking. Please try again.</p>";
+            }
         } else {
-            echo "<p class='error'>Failed to save booking. Please try again.</p>";
+            echo "<p class='error'>Please select a date and time.</p>";
         }
-    } else {
-        echo "<p class='error'>Please select a date and time.</p>";
-    }
-  }
+      }
       ?>
-      <form method="post" id="bookingForm">
-        <input type="hidden" name="booking_service" value="Ayurveda">
 
+      <form method="post" id="bookingForm1" class="bookingForm">
+        <input type="hidden" name="service" value="Ayurveda">
+
+        <!-- Date Selection -->
         <label for="booking_date">Choose a Monday:</label>
         <select name="booking_date" id="booking_date" required>
-          <option value="">Only in Mondays</option>
-          <?php foreach($dates as $date): ?>
-            <option value="<?= $date ?>"><?= date('l, F j, Y', strtotime($date)) ?></option>
-          <?php endforeach; ?>
+            <option value="">Only on Mondays</option>
+            <?php foreach($dates as $date): ?>
+                <option value="<?= $date ?>"><?= date('l, F j, Y', strtotime($date)) ?></option>
+            <?php endforeach; ?>
         </select>
 
+        <!-- Time Selection -->
         <label for="booking_time">Choose a Time:</label>
         <select name="booking_time" id="booking_time" required>
-          <option value="">10.00am to 07.00pm</option>
-          <?php foreach($timeSlots as $time): ?>
-            <option value="<?= $time ?>"><?= date("h:i A", strtotime($time)) ?></option>
-          <?php endforeach; ?>
+            <option value="">10:00 AM to 07:00 PM</option>
+            <?php foreach($timeSlots as $time): ?>
+                <option value="<?= $time ?>"><?= date("h:i A", strtotime($time)) ?></option>
+            <?php endforeach; ?>
         </select>
-
-        <button type="submit">Confirm</button>
+        <button type="submit">Confirm Booking</button>
       </form>
-    </div>
-    
-      <style>
-/* Booking Form Container */
-#bookingForm {
-    margin-top: 10px;
-    padding: 15px;
-    background: #097c1602; /* soft background */
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    max-width: 40%;
-    margin-left: 250px;
-  
-}
-
-/* Labels */
-#bookingForm label {
-    display: block;
-    font-weight: 600;
-    margin-top: 15px;
-    color: #333;
-}
-
-/* Select Dropdowns */
-#bookingForm select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border 0.3s;
-}
-
-#bookingForm select:focus {
-    border-color: #ff7300; /* theme highlight */
-    outline: none;
-}
-
-/* Buttons */
-#bookingForm button {
-    padding: 10px 20px;
-    margin-top: 15px;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    background-color: #ff7300;
-    color: #fff;
-    transition: background 0.3s;
-
-}
-
-#bookingForm button:hover {
-    background-color: #e65c00;
-}
-
-/* Success / Error Messages */
-.message {
-    color: green;
-    font-weight: 600;
-    margin-top: 10px;
-}
-
-.error {
-    color: red;
-    font-weight: 600;
-    margin-top: 10px;
-}
-
-</style>
-
+      </div>
   </div>
-
   <div class="hero-image-wrapper">
     <img src="S1.jpg" alt="Ayurveda Therapy" class="hero-image">
     <img src="Leaves4.png" alt="Decoration Leaf" class="decor-leaf leaf-left">
@@ -473,10 +416,20 @@ if ($isLoggedIn && $userRole !== 'customer') {
   <a href="#" class="back-btn" onclick="goBack()">← Back to Home</a>
 </section>
 
+<script>
+const isCustomerLoggedIn = <?= isset($_SESSION['customer_id']) ? 'true' : 'false' ?>;
 
+function handleBooking(button) {
+    if(!isCustomerLoggedIn) {
+        alert("Please login first to book a service.");
+        window.location.href = "login.php";
+        return;
+    }
+    document.getElementById('bookingFormContainer').classList.remove('hidden');
+}
+</script>
 
-
-<section id="Service2"class="Service2 hidden"> 
+<section id="Service2" class="Service2 hidden">  
   <div class="Service2_Content">
     <h1>YOGA & MEDITATION</h1>
     <p>
@@ -494,7 +447,86 @@ if ($isLoggedIn && $userRole !== 'customer') {
           <li>Encourages mindfulness and inner peace</li>
         </ul>
       </div>
-     <a href="#" class="book-btn" data-service="Yoga" onclick="handleBooking(this)">BOOK NOW</a>
+      <a href="#" class="book-btn" data-service="Yoga" onclick="handleBooking(this)">BOOK NOW</a>
+    </div>
+
+    <!-- Booking Form Container -->
+    <div id="bookingFormContainer2" class="hidden">
+      <?php
+      session_start();
+      require 'db.php'; // PDO connection
+
+      // Generate next 4 weeks for Tue, Fri, Sun
+      $weeksToShow = 4;
+      $dates = [];
+      $today = new DateTime();
+      $today->setTime(0,0);
+      $validDays = ['2','5','7']; // Tue=2, Fri=5, Sun=7
+      $nextDay = clone $today;
+
+      while (count($dates) < ($weeksToShow * count($validDays))) {
+          if (in_array($nextDay->format('N'), $validDays)) {
+              $dates[] = $nextDay->format('Y-m-d');
+          }
+          $nextDay->modify('+1 day');
+      }
+
+      // Time slots
+      $timeSlots = ["09:00:00", "18:00:00"];
+
+      // Handle form submission
+      if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['service'] ?? '') === 'Yoga') {
+          if(!isset($_SESSION['customer_id'])){
+              die("<p class='error'>You must login to book Yoga & Meditation. <a href='login.php'>Login here</a></p>");
+          }
+
+          $customer_id = $_SESSION['customer_id'];
+          $booking_date = $_POST['booking_date'] ?? '';
+          $booking_time = $_POST['booking_time'] ?? '';
+
+          // Map service to therapist_id (example)
+          $therapists = [
+              'Yoga' => 2 // replace with correct therapist ID
+          ];
+          $therapist_id = $therapists['Yoga'];
+
+          if ($booking_date && $booking_time) {
+              $stmt = $pdo->prepare("INSERT INTO bookings (customer_id, therapist_id, service, booking_date, booking_time) VALUES (?, ?, ?, ?, ?)");
+              if ($stmt->execute([$customer_id, $therapist_id, 'Yoga', $booking_date, $booking_time])) {
+                  echo "<p class='message'>Booking confirmed for " . date('l, F j, Y', strtotime($booking_date)) . " at " . date('h:i A', strtotime($booking_time)) . ".</p>";
+              } else {
+                  echo "<p class='error'>Failed to save booking. Please try again.</p>";
+              }
+          } else {
+              echo "<p class='error'>Please select a date and time.</p>";
+          }
+      }
+      ?>
+
+      <form method="post" id="bookingForm2" class="bookingForm">
+        <!-- Hidden field for service -->
+        <input type="hidden" name="service" value="Yoga">
+
+        <!-- Select date -->
+        <label for="booking_date">Choose a Date (Tue, Fri, Sun):</label>
+        <select name="booking_date" id="booking_date" required>
+            <option value="">-- Select Available Date --</option>
+            <?php foreach($dates as $date): ?>
+                <option value="<?= $date ?>"><?= date('l, F j, Y', strtotime($date)) ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <!-- Select time -->
+        <label for="booking_time">Choose a Time:</label>
+        <select name="booking_time" id="booking_time" required>
+            <option value="">-- Select Time Slot --</option>
+            <?php foreach($timeSlots as $time): ?>
+                <option value="<?= $time ?>"><?= date("h:i A", strtotime($time)) ?> <?= ($time=="09:00:00" ? "- 11:00 AM" : "- 08:00 PM") ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <button type="submit">Confirm Booking</button>
+      </form>
     </div>
   </div>
 
@@ -506,6 +538,22 @@ if ($isLoggedIn && $userRole !== 'customer') {
   </div>
   <a href="#" class="back-btn" onclick="goBack()">← Back to Home</a>
 </section>
+
+<script>
+const isCustomerLoggedIn = <?= isset($_SESSION['customer_id']) ? 'true' : 'false' ?>;
+
+function handleBooking(button) {
+    if(!isCustomerLoggedIn) {
+        alert("Please login first to book a service.");
+        window.location.href = "login.php";
+        return;
+    }
+    const service = button.getAttribute('data-service');
+    if(service === "Yoga") {
+        document.getElementById('bookingFormContainer2').classList.remove('hidden');
+    }
+}
+</script>
 
 <section id="Service3" class="Service3 hidden"> 
   <div class="Service3_Content">
@@ -525,8 +573,82 @@ if ($isLoggedIn && $userRole !== 'customer') {
           <li>Prevents lifestyle-related diseases</li>
         </ul>
       </div>
-      <a href="#" class="book-btn" data-service="Nutrition" onclick="handleBooking(this)">BOOK NOW</a>
+      <a href="#" class="book-btn" data-service="Nutrition" onclick="handleBooking3(this)">BOOK NOW</a>
     </div>
+
+    <!-- Booking Form Container -->
+    <div id="bookingFormContainer3" class="hidden">
+      <?php
+      session_start();
+      require 'db.php'; // PDO connection
+
+      // Allowed days: Wednesday & Saturday
+      $availableDays = ['Wednesday', 'Saturday'];
+      $dates3 = [];
+      $today = new DateTime();
+      $interval = new DateInterval('P1D'); // daily interval
+      $period = new DatePeriod($today, $interval, 30); // next 30 days
+
+      foreach ($period as $date) {
+          if (in_array($date->format('l'), $availableDays)) {
+              $dates3[] = $date->format('Y-m-d');
+          }
+      }
+
+      // Time slots: 09:00 - 13:00
+      $timeSlots3 = ['09:00:00', '10:00:00', '11:00:00', '12:00:00', '13:00:00'];
+
+      // Handle form submission
+      if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['service'] ?? '') === 'Nutrition') {
+          if(!isset($_SESSION['customer_id'])){
+              die("<p class='error'>You must login to submit a booking. <a href='login.php'>Login here</a></p>");
+          }
+
+          $customer_id = $_SESSION['customer_id'];
+          $booking_date = $_POST['booking_date'] ?? '';
+          $booking_time = $_POST['booking_time'] ?? '';
+
+          // Example: assign a therapist ID for Nutrition service
+          $therapist_id = 3; // replace with actual therapist ID from DB
+
+          if ($booking_date && $booking_time) {
+              $stmt = $pdo->prepare("INSERT INTO bookings (customer_id, therapist_id, service, booking_date, booking_time) VALUES (?, ?, ?, ?, ?)");
+              if ($stmt->execute([$customer_id, $therapist_id, 'Nutrition', $booking_date, $booking_time])) {
+                  echo "<p class='message'>Booking confirmed for " . date('l, F j, Y', strtotime($booking_date)) . " at " . date('h:i A', strtotime($booking_time)) . ".</p>";
+              } else {
+                  echo "<p class='error'>Failed to save booking. Please try again.</p>";
+              }
+          } else {
+              echo "<p class='error'>Please select a date and time.</p>";
+          }
+      }
+      ?>
+
+      <!-- Booking Form -->
+      <form method="post" id="bookingForm3" class="bookingForm">
+        <input type="hidden" name="service" value="Nutrition">
+
+        <label for="booking_date3">Choose a Day:</label>
+        <select name="booking_date" id="booking_date3" required>
+            <option value="">-- Wednesdays & Saturdays only --</option>
+            <?php foreach($dates3 as $date): ?>
+                <option value="<?= $date ?>"><?= date('l, F j, Y', strtotime($date)) ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <label for="booking_time3">Choose a Time:</label>
+        <select name="booking_time" id="booking_time3" required>
+            <option value="">-- 09:00 AM to 01:00 PM --</option>
+            <?php foreach($timeSlots3 as $time): ?>
+                <option value="<?= $time ?>"><?= date("h:i A", strtotime($time)) ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <button type="submit">Confirm Booking</button>
+      </form>
+    </div>
+    <!-- End Booking Form -->
+
   </div>
 
   <div class="hero-image-wrapper">
@@ -535,8 +657,23 @@ if ($isLoggedIn && $userRole !== 'customer') {
     <img src="Leaves3.png" alt="Decoration Leaf" class="decor-leaf leaf-right">
     <img src="Leaves1.png" alt="Decoration Flower" class="decor-flower">
   </div>
+
   <a href="#" class="back-btn" onclick="goBack()">← Back to Home</a>
 </section>
+
+<script>
+const isCustomerLoggedIn3 = <?= isset($_SESSION['customer_id']) ? 'true' : 'false' ?>;
+
+function handleBooking3(button) {
+    if(!isCustomerLoggedIn3) {
+        alert("Please login first to book a service.");
+        window.location.href = "login.php";
+        return;
+    }
+    document.getElementById('bookingFormContainer3').classList.remove('hidden');
+}
+</script>
+
 
 <section id="Service4" class="Service4 hidden"> 
   <div class="Service4_Content">
@@ -556,8 +693,89 @@ if ($isLoggedIn && $userRole !== 'customer') {
           <li>Prevents future injuries with corrective exercises</li>
         </ul>
       </div>
-      <a href="#" class="book-btn" data-service="Physiotherapy" onclick="handleBooking(this)">BOOK NOW</a>
+      <a href="#" class="book-btn" data-service="Physiotherapy" onclick="handleBooking4(this)">BOOK NOW</a>
     </div>
+
+    <!-- Booking Form Container -->
+    <div id="bookingFormContainer4" class="hidden">
+      <?php
+      session_start();
+      require 'db.php'; // your PDO connection
+
+      // Available days: Wednesday & Saturday for the next 30 days
+      $availableDays = ['Wednesday', 'Saturday'];
+      $dates = [];
+      $today = new DateTime();
+      $interval = new DateInterval('P1D'); // daily interval
+      $period = new DatePeriod($today, $interval, 30); // next 30 days
+
+      foreach ($period as $date) {
+          if (in_array($date->format('l'), $availableDays)) {
+              $dates[] = $date->format('Y-m-d');
+          }
+      }
+
+      // Time slots: 09:00 to 18:00 hourly
+      $timeSlots = [];
+      for ($hour = 9; $hour <= 18; $hour++) {
+          $timeSlots[] = sprintf("%02d:00:00", $hour);
+      }
+
+      // Handle form submission
+      if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['service'] ?? '') === 'Physiotherapy') {
+          if(!isset($_SESSION['customer_id'])){
+              die("<p class='error'>You must login to submit a booking. <a href='login.php'>Login here</a></p>");
+          }
+
+          $customer_id = $_SESSION['customer_id'];
+          $booking_date = $_POST['booking_date'] ?? '';
+          $booking_time = $_POST['booking_time'] ?? '';
+
+          // Map service to therapist_id
+          $therapists = ['Physiotherapy' => 4]; // replace 4 with actual therapist ID
+          $therapist_id = $therapists['Physiotherapy'];
+
+          if ($booking_date && $booking_time) {
+              $stmt = $pdo->prepare("INSERT INTO bookings (customer_id, therapist_id, service, booking_date, booking_time) VALUES (?, ?, ?, ?, ?)");
+              if ($stmt->execute([$customer_id, $therapist_id, 'Physiotherapy', $booking_date, $booking_time])) {
+                  echo "<p class='message'>Booking confirmed for " . date('l, F j, Y', strtotime($booking_date)) . " at " . date('h:i A', strtotime($booking_time)) . ".</p>";
+              } else {
+                  echo "<p class='error'>Failed to save booking. Please try again.</p>";
+              }
+          } else {
+              echo "<p class='error'>Please select a date and time.</p>";
+          }
+      }
+      ?>
+
+      <!-- Booking Form -->
+      <form method="post" id="bookingForm4" class="bookingForm">
+        <input type="hidden" name="service" value="Physiotherapy">
+
+        <!-- Select date -->
+        <label for="booking_date4">Choose a Day:</label>
+        <select name="booking_date" id="booking_date4" required>
+            <option value="">-- Wednesdays & Saturdays only --</option>
+            <?php foreach($dates as $date): ?>
+                <option value="<?= $date ?>"><?= date('l, F j, Y', strtotime($date)) ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <!-- Select time -->
+        <label for="booking_time4">Choose a Time:</label>
+        <select name="booking_time" id="booking_time4" required>
+            <option value="">-- 09:00 AM to 06:00 PM --</option>
+            <?php foreach($timeSlots as $time): ?>
+                <option value="<?= $time ?>"><?= date("h:i A", strtotime($time)) ?></option>
+            <?php endforeach; ?>
+        </select>
+
+        <!-- Confirm button -->
+        <button type="submit">Confirm Booking</button>
+      </form>
+    </div>
+    <!-- End Booking Form -->
+
   </div>
 
   <div class="hero-image-wrapper">
@@ -566,9 +784,79 @@ if ($isLoggedIn && $userRole !== 'customer') {
     <img src="Leaves3.png" alt="Decoration Leaf" class="decor-leaf leaf-right">
     <img src="Leaves1.png" alt="Decoration Flower" class="decor-flower">
   </div>
+
   <a href="#" class="back-btn" onclick="goBack()">← Back to Home</a>
 </section>
 
+<script>
+const isCustomerLoggedIn4 = <?= isset($_SESSION['customer_id']) ? 'true' : 'false' ?>;
+
+function handleBooking4(button) {
+    if(!isCustomerLoggedIn4) {
+        alert("Please login first to book a service.");
+        window.location.href = "login.php";
+        return;
+    }
+    document.getElementById('bookingFormContainer4').classList.remove('hidden');
+}
+</script>
+
+<style>
+.bookingForm {
+    margin-top: 10px;
+    padding: 15px;
+    background: #097c1602;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    max-width: 40%;
+    margin-left: 250px;
+}
+
+.bookingForm label {
+    display: block;
+    font-weight: 600;
+    margin-top: 15px;
+    color: #333;
+}
+
+.bookingForm select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border 0.3s;
+}
+
+.bookingForm select:focus {
+    border-color: #ff7300;
+    outline: none;
+}
+
+.bookingForm button {
+    padding: 10px 20px;
+    margin-top: 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #ff7300;
+    color: #fff;
+    transition: background 0.3s;
+}
+
+.bookingForm button:hover {
+    background-color: #e65c00;
+}
+</style>
+<div id="bookingSuccessModal" class="hidden modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <h3>Booking Confirmed!</h3>
+    <p>Your booking has been successfully saved. See you soon!</p>
+  </div>
+</div>
 
 
 <script>
@@ -704,18 +992,79 @@ function goBack() {
 }
 </script>
 
-
 <script>
-    const isCustomerLoggedIn = <?= isset($_SESSION['customer_id']) ? 'true' : 'false' ?>;
+const isCustomerLoggedIn = <?= isset($_SESSION['customer_id']) ? 'true' : 'false' ?>;
 
-    function handleBooking(button) {
+function handleBooking(button) {
+    if(!isCustomerLoggedIn) {
+        alert("Please login first to book a service.");
+        window.location.href = "login.php"; 
+        return;
+    }
+
+    // Hide all booking forms
+    document.querySelectorAll('[id^="bookingFormContainer"]').forEach(form => {
+        form.classList.add('hidden');
+    });
+
+    // Show the correct booking form based on service
+    const service = button.getAttribute("data-service");
+    if(service === "Ayurveda") document.getElementById("bookingFormContainer").classList.remove("hidden");
+    else if(service === "Yoga") document.getElementById("bookingFormContainer2").classList.remove("hidden");
+    else if(service === "Nutrition") document.getElementById("bookingFormContainer3").classList.remove("hidden");
+    else if(service === "Physiotherapy") document.getElementById("bookingFormContainer4").classList.remove("hidden");
+}
+
+// Attach AJAX submit to all booking forms
+document.querySelectorAll('.bookingForm').forEach(form => {
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
         if(!isCustomerLoggedIn) {
             alert("Please login first to book a service.");
-            window.location.href = "login.php"; // redirect to login page
+            window.location.href = "login.php";
             return;
         }
-        document.getElementById('bookingFormContainer').classList.remove('hidden');
+
+        const formData = new FormData(this);
+
+        fetch('booking_process.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.text())
+        .then(data => {
+            if(data.includes('success')) {
+                showBookingSuccess(); // show modal/banner
+                this.reset(); // clear form
+                const serviceSection = this.closest('[id^="Service"]');
+                if(serviceSection) serviceSection.classList.add('hidden'); // hide service section
+            } else {
+                alert('Booking failed. Please try again.');
+            }
+        })
+        .catch(err => console.error(err));
+    });
+});
+
+// Booking success modal
+function showBookingSuccess() {
+    const modal = document.getElementById('bookingModal');
+    if(modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'block';
+    } else {
+        alert("Booking Confirmed!"); // fallback if modal not present
     }
+}
+
+function closeBookingModal() {
+    const modal = document.getElementById('bookingModal');
+    if(modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
+}
 </script>
 
 
