@@ -3,9 +3,10 @@ session_start();
 
 // Role-based session check
 if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin'){
-    header("Location: index.php");
+    header("Location: login.php");
     exit();
 }
+
 ?>
 
 <!DOCTYPE html>

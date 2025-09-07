@@ -1,8 +1,22 @@
 <?php
 session_start();
+
 // Check login status
-$isLoggedIn = isset($_SESSION['customer_id']);
+$isLoggedIn   = isset($_SESSION['customer_id']);
 $customerName = $_SESSION['customer_name'] ?? '';
+$userRole     = $_SESSION['role'] ?? 'guest';
+
+// Redirect non-customers
+if ($isLoggedIn && $userRole !== 'customer') {
+    if ($userRole === 'admin') {
+        header("Location: admin_dashboard.php");
+        exit();
+    }
+    if ($userRole === 'therapist') {
+        header("Location: therapist_dashboard.php");
+        exit();
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,11 +50,11 @@ $customerName = $_SESSION['customer_name'] ?? '';
 
           
             <div class="nav_button" id="navButtonContainer">
-                <?php if ($isLoggedIn): ?>
-                    <span>Hi, <?= htmlspecialchars($customerName) ?></span>
-                    <a href="logout.php" class="btn">Logout</a>
+               <?php if ($isLoggedIn): ?>
+               <span>Hi, <?= htmlspecialchars($customerName) ?></span>
+                <a href="logout.php" class="btn">Logout</a>
                 <?php else: ?>
-                    <button class="btn" id="loginBtn">Login</button>
+                <button class="btn" id="loginBtn">Login</button>
                 <?php endif; ?>
             </div>
         </nav>
@@ -284,9 +298,7 @@ $customerName = $_SESSION['customer_name'] ?? '';
     </footer>
 
     <!-- Subpages for services -->
-
-
-<section id="Service1"class="Service1 hidden"> 
+<section id="Service1" class="Service1 hidden"> 
   <div class="Service1_Content">
     <h1>AYURVEDIC THERAPY</h1>
     <p>
@@ -307,6 +319,148 @@ $customerName = $_SESSION['customer_name'] ?? '';
       </div>
       <a href="#" class="book-btn" data-service="Ayurveda" onclick="handleBooking(this)">BOOK NOW</a>
     </div>
+
+    <!-- Booking Form Container -->
+    <div id="bookingFormContainer" class="hidden">
+      <?php
+      // PHP code to generate dates and times
+      $weeksToShow = 4;
+      $dates = [];
+      $today = new DateTime();
+      $today->setTime(0,0);
+      $nextMonday = clone $today;
+      if ($today->format('N') != 1) $nextMonday->modify('next Monday');
+
+      for ($i = 0; $i < $weeksToShow; $i++) {
+          $dates[] = $nextMonday->format('Y-m-d');
+          $nextMonday->modify('+1 week');
+      }
+
+      $startHour = 10;
+      $endHour = 19;
+      $timeSlots = [];
+      for ($hour = $startHour; $hour <= $endHour; $hour++) {
+          $timeSlots[] = sprintf("%02d:00", $hour);
+      }
+
+      // Handle form submission
+      if ($_SERVER['REQUEST_METHOD'] === 'POST' 
+         && isset($_POST['booking_service']) 
+         && $_POST['booking_service'] === 'Ayurveda') {
+
+           if(!isset($_SESSION['customer_id'])){
+          // Customer is not logged in → block submission
+          die("<p class='error'>You must login to submit a booking. <a href='login.php'>Login here</a></p>");
+        }
+          $customer_id = $_SESSION['customer_id'] ?? null;
+          $booking_date = $_POST['booking_date'] ?? '';
+          $booking_time = $_POST['booking_time'] ?? '';
+
+          if ($booking_date && $booking_time) {
+        $stmt = $pdo->prepare("INSERT INTO bookings (customer_id, service, booking_date, booking_time) VALUES (?, ?, ?, ?)");
+        if ($stmt->execute([$customer_id, 'Ayurveda', $booking_date, $booking_time])) {
+            echo "<p class='message'>Booking confirmed for $booking_date at $booking_time.</p>";
+        } else {
+            echo "<p class='error'>Failed to save booking. Please try again.</p>";
+        }
+    } else {
+        echo "<p class='error'>Please select a date and time.</p>";
+    }
+  }
+      ?>
+      <form method="post" id="bookingForm">
+        <input type="hidden" name="booking_service" value="Ayurveda">
+
+        <label for="booking_date">Choose a Monday:</label>
+        <select name="booking_date" id="booking_date" required>
+          <option value="">Only in Mondays</option>
+          <?php foreach($dates as $date): ?>
+            <option value="<?= $date ?>"><?= date('l, F j, Y', strtotime($date)) ?></option>
+          <?php endforeach; ?>
+        </select>
+
+        <label for="booking_time">Choose a Time:</label>
+        <select name="booking_time" id="booking_time" required>
+          <option value="">10.00am to 07.00pm</option>
+          <?php foreach($timeSlots as $time): ?>
+            <option value="<?= $time ?>"><?= date("h:i A", strtotime($time)) ?></option>
+          <?php endforeach; ?>
+        </select>
+
+        <button type="submit">Confirm</button>
+      </form>
+    </div>
+    
+      <style>
+/* Booking Form Container */
+#bookingForm {
+    margin-top: 10px;
+    padding: 15px;
+    background: #097c1602; /* soft background */
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    max-width: 40%;
+    margin-left: 250px;
+  
+}
+
+/* Labels */
+#bookingForm label {
+    display: block;
+    font-weight: 600;
+    margin-top: 15px;
+    color: #333;
+}
+
+/* Select Dropdowns */
+#bookingForm select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border 0.3s;
+}
+
+#bookingForm select:focus {
+    border-color: #ff7300; /* theme highlight */
+    outline: none;
+}
+
+/* Buttons */
+#bookingForm button {
+    padding: 10px 20px;
+    margin-top: 15px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #ff7300;
+    color: #fff;
+    transition: background 0.3s;
+
+}
+
+#bookingForm button:hover {
+    background-color: #e65c00;
+}
+
+/* Success / Error Messages */
+.message {
+    color: green;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.error {
+    color: red;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+</style>
+
   </div>
 
   <div class="hero-image-wrapper">
@@ -315,8 +469,12 @@ $customerName = $_SESSION['customer_name'] ?? '';
     <img src="Leaves3.png" alt="Decoration Leaf" class="decor-leaf leaf-right">
     <img src="Leaves1.png" alt="Decoration Flower" class="decor-flower">
   </div>
+
   <a href="#" class="back-btn" onclick="goBack()">← Back to Home</a>
 </section>
+
+
+
 
 <section id="Service2"class="Service2 hidden"> 
   <div class="Service2_Content">
@@ -446,7 +604,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (event.data.type === "authSuccess") {
             modal.style.display = "none";
             navButtonContainer.innerHTML = `
-                <span>Hi, ${event.data.name}</span>
+                <span>Hi, <?= htmlspecialchars($customerName) ?></span>
                 <a href="logout.php" class="btn">Logout</a>
             `;
         }
@@ -544,6 +702,20 @@ function goBack() {
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+</script>
+
+
+<script>
+    const isCustomerLoggedIn = <?= isset($_SESSION['customer_id']) ? 'true' : 'false' ?>;
+
+    function handleBooking(button) {
+        if(!isCustomerLoggedIn) {
+            alert("Please login first to book a service.");
+            window.location.href = "login.php"; // redirect to login page
+            return;
+        }
+        document.getElementById('bookingFormContainer').classList.remove('hidden');
+    }
 </script>
 
 

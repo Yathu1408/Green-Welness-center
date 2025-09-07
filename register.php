@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         // Insert into DB
-        $stmt = $pdo->prepare("INSERT INTO customers (name, legalid, phone, email, password) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $pdo->prepare("INSERT INTO users (name, legalid, phone, email, password) VALUES (?, ?, ?, ?, ?)");
         $stmt->execute([$name, $legalid, $phone, $email, $password]);
 
         $_SESSION['customer_id'] = $pdo->lastInsertId();

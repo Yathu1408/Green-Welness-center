@@ -1,50 +1,44 @@
 <?php
 session_start();
-require 'db.php'; // $pdo PDO connection
-
-$error = '';
+require 'db.php'; // $pdo must be defined
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'] ?? '';
+    $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
-    $stmt = $pdo->prepare("SELECT * FROM customers WHERE email = ?");
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ? LIMIT 1");
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user && password_verify($password, $user['password'])) {
-        // Store session variables
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['name'] = $user['name'];       // consistent naming
+        // Store session values
+        if($user['role'] === 'customer') {
+            $_SESSION['customer_id'] = $user['id'];    // important for booking page
+            $_SESSION['customer_name'] = $user['name'];
+        } else {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['name'] = $user['name'];
+        }
         $_SESSION['role'] = $user['role'];
 
-        // Decide where to go based on role
-        if ($user['role'] === 'admin') {
-            $redirectPage = "admin_dashboard.php";
-        } elseif ($user['role'] === 'therapist') {
-            $redirectPage = "therapist_dashboard.php";
-        } else {
-            $redirectPage = "customer_dashboard.php";
+        // Redirect based on role
+        switch ($user['role']) {
+            case 'admin':
+                echo "<script>window.top.location.href = 'admin_dashboard.php';</script>";
+                break;
+            case 'therapist':
+                echo "<script>window.top.location.href = 'therapist_dashboard.php';</script>";
+                break;
+            default: // customer
+                echo "<script>window.top.location.href = 'index.php';</script>";
         }
-
-        // Send success event to parent if inside iframe AND redirect
-        echo "<script>
-            window.parent.postMessage({
-                type: 'authSuccess',
-                name: '".addslashes($user['name'])."',
-                role: '".$user['role']."',
-                redirect: '".$redirectPage."'
-            }, '*');
-            window.location.href = '".$redirectPage."';
-        </script>";
-        exit;
+        exit();
     } else {
-        $error = "Invalid email or password";
+        $error = "Invalid email or password.";
     }
 }
-
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

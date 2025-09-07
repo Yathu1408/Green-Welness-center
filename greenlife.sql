@@ -2,7 +2,7 @@
 CREATE DATABASE IF NOT EXISTS greenlife;
 USE greenlife;
 
-CREATE TABLE customers (
+CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     legalid VARCHAR(20)NOT NULL UNIQUE,
@@ -64,6 +64,17 @@ CREATE TABLE program_registrations (
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE,
     FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+CREATE TABLE user_messages (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    customer_id INT NOT NULL,
+    therapist_id INT NOT NULL,
+    message TEXT NOT NULL,
+    status ENUM('new', 'replied') DEFAULT 'new',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE,
+    FOREIGN KEY (therapist_id) REFERENCES customers(id) ON DELETE CASCADE
+);
 
 
 -- Insert Admin user

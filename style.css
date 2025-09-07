@@ -900,7 +900,70 @@ header {
   transform: translateY(-3px);
   background: #d96a0c;
 }
+/* Booking Form Container */
+#bookingForm {
+    background-color: #00140000; /* light, soft background */
+    padding: 20px;
+    border-radius: 12px;
+    max-width: 400px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-top: 20px;
+}
 
+/* Form Labels */
+#bookingForm label {
+    display: block;
+    font-weight: 600;
+    margin-top: 15px;
+    color: #333;
+}
+
+/* Select Dropdowns */
+#bookingForm select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    transition: border 0.3s;
+}
+
+#bookingForm select:focus {
+    outline: none;
+    border-color: #ff7300; /* highlight color matching theme */
+}
+
+/* Submit Button */
+#bookingForm button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #ff7300;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+#bookingForm button:hover {
+    background-color: #e65c00;
+}
+
+/* Success & Error Messages */
+#bookingForm .message {
+    color: green;
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+#bookingForm .error {
+    color: red;
+    margin-top: 10px;
+    font-weight: 600;
+}
 .hero-image-wrapper {
   flex: 1 1 400px;
   max-width: 400px;
