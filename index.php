@@ -327,7 +327,7 @@ if ($isLoggedIn && $userRole !== 'customer') {
     <div id="bookingFormContainer" class="hidden">
       <?php
 
-      session_start();
+
       require 'db.php'; // your PDO connection
 
       // Generate next 4 Mondays
@@ -447,13 +447,12 @@ function handleBooking(button) {
           <li>Encourages mindfulness and inner peace</li>
         </ul>
       </div>
-      <a href="#" class="book-btn" data-service="Yoga" onclick="handleBooking(this)">BOOK NOW</a>
+      <a href="#" class="book-btn" data-service="Yoga" onclick="handleBooking2(this)">BOOK NOW</a>
     </div>
 
     <!-- Booking Form Container -->
     <div id="bookingFormContainer2" class="hidden">
       <?php
-      session_start();
       require 'db.php'; // PDO connection
 
       // Generate next 4 weeks for Tue, Fri, Sun
@@ -508,8 +507,8 @@ function handleBooking(button) {
         <input type="hidden" name="service" value="Yoga">
 
         <!-- Select date -->
-        <label for="booking_date">Choose a Date (Tue, Fri, Sun):</label>
-        <select name="booking_date" id="booking_date" required>
+        <label for="booking_date2">Choose a Date (Tue, Fri, Sun):</label>
+        <select name="booking_date" id="booking_date2" required>
             <option value="">-- Select Available Date --</option>
             <?php foreach($dates as $date): ?>
                 <option value="<?= $date ?>"><?= date('l, F j, Y', strtotime($date)) ?></option>
@@ -517,8 +516,8 @@ function handleBooking(button) {
         </select>
 
         <!-- Select time -->
-        <label for="booking_time">Choose a Time:</label>
-        <select name="booking_time" id="booking_time" required>
+        <label for="booking_time2">Choose a Time:</label>
+        <select name="booking_time" id="booking_time2" required>
             <option value="">-- Select Time Slot --</option>
             <?php foreach($timeSlots as $time): ?>
                 <option value="<?= $time ?>"><?= date("h:i A", strtotime($time)) ?> <?= ($time=="09:00:00" ? "- 11:00 AM" : "- 08:00 PM") ?></option>
@@ -540,9 +539,9 @@ function handleBooking(button) {
 </section>
 
 <script>
-const isCustomerLoggedIn = <?= isset($_SESSION['customer_id']) ? 'true' : 'false' ?>;
+const isCustomerLoggedIn2 = <?= isset($_SESSION['customer_id']) ? 'true' : 'false' ?>;
 
-function handleBooking(button) {
+function handleBooking2(button) {
     if(!isCustomerLoggedIn) {
         alert("Please login first to book a service.");
         window.location.href = "login.php";
@@ -579,7 +578,6 @@ function handleBooking(button) {
     <!-- Booking Form Container -->
     <div id="bookingFormContainer3" class="hidden">
       <?php
-      session_start();
       require 'db.php'; // PDO connection
 
       // Allowed days: Wednesday & Saturday
@@ -699,7 +697,7 @@ function handleBooking3(button) {
     <!-- Booking Form Container -->
     <div id="bookingFormContainer4" class="hidden">
       <?php
-      session_start();
+    
       require 'db.php'; // your PDO connection
 
       // Available days: Wednesday & Saturday for the next 30 days
