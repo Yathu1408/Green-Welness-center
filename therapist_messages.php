@@ -2,54 +2,64 @@
 session_start();
 require 'db.php'; // database connection
 
-if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'therapist'){
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'therapist') {
     header("Location: index.php");
     exit();
 }
 
-$therapist_name = $_SESSION['name'];
+$therapist_name = $_SESSION['name'] ?? '';
 
-// Map services to therapists
+// Map services to therapists (adjust names to match your actual therapist names)
 $service_to_therapist = [
-    'Massage' => 'Therapist 1',
+    'Ayurveda' => 'Therapist 1',
     'Yoga' => 'Therapist 2',
     'Meditation' => 'Therapist 3',
     'Wellness Consultation' => 'Therapist 4'
 ];
 
 // Get services assigned to this therapist
-$services_for_therapist = array_keys(array_filter($service_to_therapist, function($t) use ($therapist_name) {
-    return $t === $therapist_name;
-}));
+$services_for_therapist = array_keys(array_filter(
+    $service_to_therapist,
+    function ($t) use ($therapist_name) {
+        return $t === $therapist_name;
+    }
+));
 
-if(empty($services_for_therapist)){
-    $services_for_therapist = ['']; // Avoid SQL error
-}
+$success = null;
 
-$services_str = "'" . implode("','", $services_for_therapist) . "'";
-
-// Handle reply submission
+// Handle reply submission (appends reply into message and marks as replied)
 if (isset($_POST['reply'])) {
-    $message_id = $_POST['message_id'];
-    $reply_text = $_POST['reply_text'];
+    $message_id = (int) ($_POST['message_id'] ?? 0);
+    $reply_text = trim($_POST['reply_text'] ?? '');
 
-    $stmt = $conn->prepare("UPDATE user_messages SET message = CONCAT(message, '\n\nTherapist Reply: ', ?), status='replied' WHERE id=?");
-    $stmt->bind_param("si", $reply_text, $message_id);
-    $stmt->execute();
-    $success = "Reply sent successfully!";
+    if ($message_id > 0 && $reply_text !== '') {
+        $stmt = $conn->prepare("UPDATE user_messages SET message = CONCAT(message, '\n\nTherapist Reply: ', ?), status='replied' WHERE id=?");
+        $stmt->bind_param("si", $reply_text, $message_id);
+        $stmt->execute();
+        $success = "Reply sent successfully!";
+    }
 }
 
-// Fetch messages
+// Build a WHERE clause to only show messages for the therapist's services
+$whereServices = '0'; // default: no results
+if (!empty($services_for_therapist)) {
+    $likes = [];
+    foreach ($services_for_therapist as $svc) {
+        $prefix = $conn->real_escape_string($svc) . '%';
+        $likes[] = "um.subject LIKE '$prefix'";
+    }
+    $whereServices = '(' . implode(' OR ', $likes) . ')';
+}
+
+// Fetch messages directed to this therapist's services
 $sql = "SELECT um.id, c.name AS customer_name, c.email, um.subject, um.message, um.created_at
         FROM user_messages um
-        JOIN bookings b ON b.customer_id = um.customer_id
         JOIN customers c ON c.id = um.customer_id
-        WHERE b.service IN ($services_str)
+        WHERE $whereServices
         ORDER BY um.created_at DESC";
 
 $result = $conn->query($sql);
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -76,9 +86,9 @@ form { margin-top: 10px; }
 <div class="container">
     <h2>Customer Messages</h2>
 
-    <?php if(isset($success)) echo "<p class='success'>{$success}</p>"; ?>
+    <?php if($success) echo "<p class='success'>".htmlspecialchars($success)."</p>"; ?>
 
-    <?php if($result->num_rows > 0): ?>
+    <?php if($result && $result->num_rows > 0): ?>
         <table>
             <tr>
                 <th>Customer Name</th>
@@ -94,7 +104,7 @@ form { margin-top: 10px; }
                 <td>
                     <?= nl2br(htmlspecialchars($row['message'])); ?>
                     <form method="post">
-                        <input type="hidden" name="message_id" value="<?= $row['id']; ?>">
+                        <input type="hidden" name="message_id" value="<?= (int)$row['id']; ?>">
                         <textarea name="reply_text" rows="2" placeholder="Type your reply..." required></textarea>
                         <button type="submit" name="reply">Send Reply</button>
                     </form>
