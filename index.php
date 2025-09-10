@@ -3,7 +3,6 @@ session_start();
 
 // Check login status
 $isLoggedIn   = isset($_SESSION['customer_id']); 
-
 $customerName = $_SESSION['customer_name'] ?? '';
 $userRole     = $_SESSION['role'] ?? 'guest';
 
@@ -101,6 +100,136 @@ if ($isLoggedIn && $userRole !== 'customer') {
     <button id="sendMessage">Send</button>
   </div>
 </div>
+
+<style>
+/* Floating Chat Button */
+.chat-float {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.chat-float button {
+  background: #ff6600;
+  color: #fff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 30px;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  animation: pulse 1.5s infinite;
+  transition: background 0.3s ease;
+}
+
+.chat-float button:hover {
+  background: #e65c00;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Chat Popup */
+.chat-popup {
+  display: none;
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 320px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  overflow: hidden;
+  z-index: 1000;
+  animation: slideUp 0.3s ease-in-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Header */
+.chat-header {
+  background: #0b6623;
+  color: white;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.chat-header span {
+  cursor: pointer;
+  font-size: 20px;
+}
+
+/* Body */
+.chat-body {
+  padding: 12px;
+}
+
+.chat-body label {
+  font-size: 14px;
+  margin-top: 8px;
+  display: block;
+}
+
+.chat-body input,
+.chat-body textarea,
+.chat-body select {
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.chat-body textarea {
+  resize: none;
+}
+
+/* Send Button */
+.chat-body button {
+  margin-top: 12px;
+  width: 100%;
+  background: #0b6623;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.3s ease;
+}
+
+.chat-body button:hover {
+  background: #094d1b;
+}
+
+/* Error / Success Messages */
+.chat-error {
+  margin-top: 8px;
+  font-size: 13px;
+  color: red;
+}
+
+
+</style>
+
     </header>
 </section>
 
@@ -173,72 +302,61 @@ if ($isLoggedIn && $userRole !== 'customer') {
 
   <div class="programmes grid">
     <!-- Programme 1 -->
-  <div class="programme_card">
-    <h3>Detox & Rejuvenation Retreat</h3>
-    <div class="programme_item"><i class="ri-calendar-schedule-fill"></i><span>Date: September 10 – 14, 2025</span></div>
-    <div class="programme_item"><i class="ri-user-fill"></i><span>Dr Nirmala Perera – Senior Ayurveda Specialist</span></div>
-    <div class="programme_item"><i class="ri-map-pin-2-fill"></i><span>Green Life Wellness Center, Colombo</span></div>
+    <div class="programme_card">
+      <h3>Detox & Rejuvenation Retreat</h3>
+      <div class="programme_item">
+        <i class="ri-calendar-schedule-fill"></i>
+        <span>Date: September 10 – 14, 2025</span>
+      </div>
+      <div class="programme_item">
+        <i class="ri-user-fill"></i>
+        <span>Dr Nirmala Perera – Senior Ayurveda Specialist</span>
+      </div>
+      <div class="programme_item">
+        <i class="ri-map-pin-2-fill"></i>
+        <span>Green Life Wellness Center, Colombo</span>
+      </div>
+      <a href="#" class="register_btn" data-service="programme1" onclick="handleBooking(this)">REGISTER</a>
+    </div>
 
-    <!-- Register button -->
-    <a href="#" class="register_btn" data-program="1">REGISTER</a>
+    <!-- Programme 2 -->
+    <div class="programme_card">
+      <h3>Stress Relief & Mindfulness Workshop</h3>
+      <div class="programme_item">
+        <i class="ri-calendar-schedule-fill"></i>
+        <span>Date: September 20, 2025</span>
+      </div>
+      <div class="programme_item">
+        <i class="ri-user-fill"></i>
+        <span>Mr. Sahan Jayawardena – Certified Yoga & Meditation Trainer</span>
+      </div>
+      <div class="programme_item">
+        <i class="ri-map-pin-2-fill"></i>
+        <span>Green Life Wellness Center, Colombo</span>
+      </div>
+      <a href="#" class="register_btn" data-service="programme2" onclick="handleBooking(this)">REGISTER</a>
+    </div>
 
-
-
-    <!-- Message box -->
-    <div id="programMessage1"></div>
-
-    <!-- Registration form (hidden) -->
-    <form id="programForm1" class="programForm hidden">
-    <input type="hidden" name="program_id" value="1">
-    <button type="submit">Confirm Registration</button>
-    </form>
-
+    <!-- Programme 3 -->
+    <div class="programme_card">
+      <h3>Healthy Weight Management Programme</h3>
+      <div class="programme_item">
+        <i class="ri-calendar-schedule-fill"></i>
+        <span>Date: November 02, 2025</span>
+      </div>
+      <div class="programme_item">
+        <i class="ri-user-fill"></i>
+        <span>Ms. Anjali De Silva – Wellness Coach & Lifestyle Consultant</span>
+      </div>
+      <div class="programme_item">
+        <i class="ri-map-pin-2-fill"></i>
+        <span>Independence Square, Colombo 07</span>
+      </div>
+      <a href="#" class="register_btn" data-service="programme3" onclick="handleBooking(this)">REGISTER</a>
+    </div>
   </div>
-
-  <!-- Programme 2 -->
-  <div class="programme_card">
-    <h3>Stress Relief & Mindfulness Workshop</h3>
-    <div class="programme_item"><i class="ri-calendar-schedule-fill"></i><span>Date: September 20, 2025</span></div>
-    <div class="programme_item"><i class="ri-user-fill"></i><span>Mr. Sahan Jayawardena – Certified Yoga & Meditation Trainer</span></div>
-    <div class="programme_item"><i class="ri-map-pin-2-fill"></i><span>Green Life Wellness Center, Colombo</span></div>
-
-   <a href="#" class="register_btn" data-program="2">REGISTER</a>
-
-    <div id="programMessage2"></div>
-
-    <form id="programForm2" class="programForm hidden">
-      <input type="hidden" name="program_id" value="2">
-      <button type="submit">Confirm Registration</button>
-    </form>
-  </div>
-
-  <!-- Programme 3 -->
-  <div class="programme_card">
-    <h3>Healthy Weight Management Programme</h3>
-    <div class="programme_item"><i class="ri-calendar-schedule-fill"></i><span>Date: November 02, 2025</span></div>
-    <div class="programme_item"><i class="ri-user-fill"></i><span>Ms. Anjali De Silva – Wellness Coach & Lifestyle Consultant</span></div>
-    <div class="programme_item"><i class="ri-map-pin-2-fill"></i><span>Independence Square, Colombo 07</span></div>
-
-    <a href="#" class="register_btn" data-program="3">REGISTER</a>
-
-    <div id="programMessage3"></div>
-
-    <form id="programForm3" class="programForm hidden">
-      <input type="hidden" name="program_id" value="3">
-      <button type="submit">Confirm Registration</button>
-    </form>
-  </div>
-
 </section>
-<style> 
-.hidden { display: none; }
- .msg { margin-top: 8px; padding: 10px; border-radius: 6px; border: 1px solid transparent; }
- .msg.success { background: #e6ffed; color: #0f5132; border-color: #badbcc; }
- .msg.error { background: #ffecec; color: #842029; border-color: #f5c2c7; } 
-.msg.info { background: #7b808675; color: #084298; border-color: #6889665e; }
 
-
- </style>
 
     <!-- About Section -->
     <section id="About"class="about_us_container">
@@ -1080,118 +1198,6 @@ function closeBookingModal() {
 </script>
 
 
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-    const isLoggedIn = <?= json_encode($isLoggedIn) ?>;
-    const forms = document.querySelectorAll('.programForm');
-
-    const getForm = (id) => document.getElementById('programForm' + id);
-    const getMsgBox = (id) => document.getElementById('programMessage' + id);
-
-    function hideAllForms() {
-        forms.forEach(f => f.classList.add('hidden'));
-    }
-
-    function showMessage(programId, html, type = 'info') {
-        const box = getMsgBox(programId);
-        if (!box) return;
-        box.innerHTML = `<div class="msg ${type}">${html}</div>`;
-    }
-
-    function clearAllMessages() {
-        [1, 2, 3].forEach(id => {
-            const box = getMsgBox(id);
-            if (box) box.innerHTML = '';
-        });
-    }
-
-    // Global function for inline onclick
-    window.handleBooking = function(linkEl) {
-        const programId = linkEl.dataset.program;
-        clearAllMessages();
-
-        if (!isLoggedIn) {
-            hideAllForms();
-            showMessage(programId, 'Please log in to register. <a href="login.php">Log in</a>', 'error');
-            return false;
-        }
-
-        hideAllForms();
-        const form = getForm(programId);
-        if (form) form.classList.remove('hidden');
-        return false; // critical for inline onclick="return handleBooking(this)"
-    };
-
-    // Prevent default behavior for all register links
-    document.querySelectorAll('.register_btn').forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            handleBooking(e.currentTarget);
-        });
-    });
-
-    // AJAX form submission
-    forms.forEach(form => {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const programId = form.querySelector('input[name="program_id"]').value;
-            const msgBox = getMsgBox(programId);
-            const submitBtn = form.querySelector('button[type="submit"]');
-
-            if (msgBox) msgBox.innerHTML = '<div class="msg info">Registering...</div>';
-            if (submitBtn) submitBtn.disabled = true;
-
-            try {
-                const res = await fetch(REGISTER_URL, {
-                method: 'POST',
-                body: new FormData(form),
-                credentials: 'same-origin',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-               });
-
-                const text = await res.text();
-
-                // Handle server responses
-                const lower = text.toLowerCase();
-
-                if (res.redirected && res.url.includes('login.php')) {
-                    showMessage(programId, 'Your session expired. Please <a href="login.php">log in</a>.', 'error');
-                    return;
-                } else if (lower.includes('registration successful')) {
-                    showMessage(programId, 'Registration successful!', 'success');
-                    form.classList.add('hidden');
-                } else if (lower.includes('already registered')) {
-                    showMessage(programId, 'You have already registered for this program.', 'info');
-                } else if (lower.includes('invalid program')) {
-                    showMessage(programId, 'Invalid program selected.', 'error');
-                } else if (lower.includes('registration failed')) {
-                    showMessage(programId, 'Registration failed. Please try again.', 'error');
-                } else {
-                    showMessage(programId, 'Unexpected server response. Please refresh and try again.', 'error');
-                    console.warn('program_register.php response:', text);
-                }
-            } catch (err) {
-                showMessage(programId, 'Network error. Please try again.', 'error');
-                console.error(err);
-            } finally {
-                if (submitBtn) submitBtn.disabled = false;
-            }
-        });
-    });
-});
-</script>
-
-
-
-
-
-
-
-
 
 <script>
 // Chat popup functionality
@@ -1246,6 +1252,75 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+
+
+
+
+<script>
+/*
+  handleBooking(element)
+  - reads data-service attribute (e.g. "programme1")
+  - maps it to a programme_id (based on the DB sample inserts above)
+  - confirms and posts to send_registration.php
+  - shows success/error to user in an overlay alert (or use existing UI)
+*/
+
+/* Mapping data-service codes to programme_id.
+   If you run the SQL above, programme1 => id 1, programme2 => id 2, programme3 => id 3.
+   If you change or add programmes in DB later, either update this mapping or
+   (preferred) load mapping dynamically via an endpoint.
+*/
+const programmeCodeToId = {
+  'programme1': 1,
+  'programme2': 2,
+  'programme3': 3
+};
+
+function handleBooking(el) {
+  el = el || event.currentTarget;
+  const code = el.getAttribute('data-service');
+  const programme_id = programmeCodeToId[code];
+
+  if (!programme_id) {
+    alert('Unable to identify programme. Please refresh the page and try again.');
+    return;
+  }
+
+  // Confirm with user
+  if (!confirm('Register for this programme?')) return;
+
+  // Send registration via fetch
+  fetch('./send_registration.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `programme_id=${encodeURIComponent(programme_id)}`
+  })
+  .then(response => {
+    // If server returns non-JSON, throw so we hit catch and inspect in console
+    return response.json().catch(err => { throw new Error('Invalid server response'); });
+  })
+  .then(data => {
+    if (data.success) {
+      alert('Registration successful!');
+      // optionally update UI: disable button, show "Registered"
+      el.textContent = 'REGISTERED';
+      el.classList.add('disabled');
+      el.removeAttribute('onclick');
+      el.style.pointerEvents = 'none';
+    } else {
+      // server message can indicate login needed, duplicates, etc.
+      alert('Registration failed: ' + (data.message || 'Unknown error'));
+      if (data.redirect) {
+        window.location.href = data.redirect; // optional server-provided redirect (e.g. login page)
+      }
+    }
+  })
+  .catch(err => {
+    console.error('Registration error:', err);
+    alert('Error sending registration. Check console and server logs.');
+  });
+}
+</script>
 
 
 </body>
