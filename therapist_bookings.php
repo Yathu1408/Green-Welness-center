@@ -1,83 +1,52 @@
 <?php
 session_start();
-require 'db.php'; // include your database connection
+require 'db.php';
 
-// Ensure user is logged in and is a therapist
-if (!isset($_SESSION["user_id"]) || $_SESSION["role"] !== "therapist") {
-    header("Location: index.php");
-    exit();
+// Ensure only therapist can access
+if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'therapist'){
+    header("Location: login.php");
+    exit;
 }
 
-// Get therapist name from session
-$therapist_name = $_SESSION['name'];
+$therapist_id = $_SESSION['customer_id']; // therapist is also stored in users.id
 
-// Fetch appointments assigned to this therapist
-$sql = "SELECT b.id, c.name AS customer_name, c.email, b.service, b.booking_date, b.booking_time
-        FROM bookings b
-        JOIN customers c ON b.customer_id = c.id
-        WHERE b.service IN (
-            SELECT service FROM customers WHERE id = c.id
-        ) AND b.therapist_name = ?
-        ORDER BY b.booking_date, b.booking_time";
-
-$stmt = $conn->prepare("SELECT b.id, c.name AS customer_name, c.email, b.service, b.booking_date, b.booking_time
-                        FROM bookings b
-                        JOIN customers c ON b.customer_id = c.id
-                        WHERE b.therapist_name = ?
-                        ORDER BY b.booking_date, b.booking_time");
-$stmt->bind_param("s", $therapist_name);
-$stmt->execute();
-$result = $stmt->get_result();
+$stmt = $pdo->prepare("
+    SELECT b.id, u.name AS customer_name, b.service, b.booking_date, b.booking_time, b.created_at
+    FROM bookings b
+    JOIN users u ON b.customer_id = u.id
+    WHERE b.therapist_id = ?
+    ORDER BY b.booking_date DESC, b.booking_time DESC
+");
+$stmt->execute([$therapist_id]);
+$bookings = $stmt->fetchAll();
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Appointments | Therapist</title>
-<style>
-    body { font-family: Arial, sans-serif; background: #f4f4f9; margin:0; padding:0; }
-    .container { max-width: 900px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
-    h2 { color: #00aaff; text-align: center; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px;}
-    th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left;}
-    th { background: #00aaff; color: #fff;}
-    tr:hover { background: #f1f1f1;}
-    button { padding: 10px 20px; background: #333; color: #fff; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px;}
-    button:hover { background: #555; }
-</style>
+  <title>My Bookings - Therapist</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<div class="container">
-    <h2>My Appointments</h2>
-
-    <?php if($result->num_rows > 0): ?>
-        <table>
-            <tr>
-                <th>Customer Name</th>
-                <th>Email</th>
-                <th>Service</th>
-                <th>Date</th>
-                <th>Time</th>
-            </tr>
-            <?php while($row = $result->fetch_assoc()): ?>
-            <tr>
-                <td><?= htmlspecialchars($row['customer_name']); ?></td>
-                <td><?= htmlspecialchars($row['email']); ?></td>
-                <td><?= htmlspecialchars($row['service']); ?></td>
-                <td><?= htmlspecialchars($row['booking_date']); ?></td>
-                <td><?= htmlspecialchars($row['booking_time']); ?></td>
-            </tr>
-            <?php endwhile; ?>
-        </table>
-    <?php else: ?>
-        <p style="text-align:center;">No appointments assigned yet.</p>
-    <?php endif; ?>
-
-    <button onclick="window.location.href='therapist_dashboard.php'">Back to Dashboard</button>
-</div>
-
+  <h1>My Assigned Bookings</h1>
+  <table border="1" cellpadding="8">
+    <tr>
+      <th>ID</th>
+      <th>Customer</th>
+      <th>Service</th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Booked At</th>
+    </tr>
+    <?php foreach($bookings as $b): ?>
+      <tr>
+        <td><?= $b['id'] ?></td>
+        <td><?= htmlspecialchars($b['customer_name']) ?></td>
+        <td><?= htmlspecialchars($b['service']) ?></td>
+        <td><?= $b['booking_date'] ?></td>
+        <td><?= date("h:i A", strtotime($b['booking_time'])) ?></td>
+        <td><?= $b['created_at'] ?></td>
+      </tr>
+    <?php endforeach; ?>
+  </table>
 </body>
 </html>

@@ -2,73 +2,137 @@
 session_start();
 require 'db.php';
 
-// Admin role check
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
-    header("Location: index.php");
-    exit();
+// Ensure only admin can access
+if(!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin'){
+    header("Location: login.php");
+    exit;
 }
 
-// Fetch all bookings with customer info
-$sql = "SELECT b.id, c.name AS customer_name, c.email, b.service, b.booking_date, b.booking_time, b.created_at
-        FROM bookings b
-        JOIN customers c ON c.id = b.customer_id
-        ORDER BY b.booking_date ASC, b.booking_time ASC";
-
-$result = $conn->query($sql);
+$stmt = $pdo->query("
+    SELECT b.id, 
+           uc.name AS customer_name, 
+           ut.name AS therapist_name, 
+           b.service, b.booking_date, b.booking_time, b.created_at
+    FROM bookings b
+    JOIN users uc ON b.customer_id = uc.id
+    JOIN users ut ON b.therapist_id = ut.id
+    ORDER BY b.booking_date DESC, b.booking_time DESC
+");
+$bookings = $stmt->fetchAll();
 ?>
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin - View Bookings</title>
-<style>
-    body { font-family: Arial, sans-serif; background: #f4f4f9; margin:0; padding:0; }
-    .container { max-width: 1000px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1);}
-    h2 { color: #00aaff; text-align: center; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px;}
-    th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
-    th { background: #00aaff; color: #fff;}
-    tr:hover { background: #f1f1f1;}
-    button { padding: 8px 15px; background: #00aaff; color: #fff; border: none; border-radius: 5px; cursor: pointer; margin-top:10px;}
-    button:hover { background: #008ecc; }
-</style>
+  <title>View Bookings - Admin</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<div class="container">
-    <h2>All Bookings</h2>
-
-    <?php if($result && $result->num_rows > 0): ?>
-        <table>
-            <tr>
-                <th>#</th>
-                <th>Customer Name</th>
-                <th>Email</th>
-                <th>Service</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Booking Created</th>
-            </tr>
-            <?php $count=1; while($row = $result->fetch_assoc()): ?>
-            <tr>
-                <td><?= $count++; ?></td>
-                <td><?= htmlspecialchars($row['customer_name']); ?></td>
-                <td><?= htmlspecialchars($row['email']); ?></td>
-                <td><?= htmlspecialchars($row['service']); ?></td>
-                <td><?= date("d-m-Y", strtotime($row['booking_date'])); ?></td>
-                <td><?= date("h:i A", strtotime($row['booking_time'])); ?></td>
-                <td><?= date("d-m-Y h:i A", strtotime($row['created_at'])); ?></td>
-            </tr>
-            <?php endwhile; ?>
-        </table>
+  <h1>All Service Bookings</h1>
+  <table border="1" cellpadding="8">
+    <tr>
+      <th>ID</th>
+      <th>Customer</th>
+      <th>Therapist</th>
+      <th>Service</th>
+      <th>Date</th>
+      <th>Time</th>
+      <th>Booked At</th>
+    </tr>
+    <?php if(count($bookings) > 0): ?>
+      <?php foreach($bookings as $b): ?>
+      <tr>
+        <td><?= $b['id'] ?></td>
+        <td><?= htmlspecialchars($b['customer_name']) ?></td>
+        <td><?= htmlspecialchars($b['therapist_name']) ?></td>
+        <td><?= htmlspecialchars($b['service']) ?></td>
+        <td><?= $b['booking_date'] ?></td>
+        <td><?= date("h:i A", strtotime($b['booking_time'])) ?></td>
+        <td><?= $b['created_at'] ?></td>
+      </tr>
+      <?php endforeach; ?>
     <?php else: ?>
-        <p style="text-align:center;">No bookings found.</p>
+      <tr><td colspan="7" style="text-align:center;">No bookings found.</td></tr>
     <?php endif; ?>
+  </table>
 
-    <button onclick="window.location.href='admin_dashboard.php'">Back to Dashboard</button>
-</div>
+  <style>/* styles.css */
 
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    color: #ff9100ff; /* Green title */
+    margin-top: 30px;
+}
+
+table {
+    width: 90%;
+    margin: 30px auto;
+    border-collapse: collapse;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #026300ff; /* Orange header */
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+tr:hover {
+    background-color: #e6f4ea; /* Light green on hover */
+}
+
+td {
+    color: #333;
+}
+
+table tr:last-child td {
+    border-bottom: none;
+}
+
+@media (max-width: 768px) {
+    table, th, td {
+        display: block;
+        width: 100%;
+    }
+    th {
+        text-align: right;
+        padding-right: 50%;
+        position: relative;
+    }
+    th::after {
+        content: ":";
+        position: absolute;
+        right: 15px;
+    }
+    td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+    td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+}
+</style>
 </body>
 </html>

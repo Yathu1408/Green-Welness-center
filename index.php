@@ -509,7 +509,7 @@ if ($isLoggedIn && $userRole !== 'customer') {
 
         // Map service to therapist_id (example)
         $therapists = [
-          'Ayurveda' => 1 // replace 1 with actual therapist ID
+          'Ayurveda' => 2 // replace 1 with actual therapist ID
         ];
         $therapist_id = $therapists['Ayurveda'];
 
@@ -629,7 +629,7 @@ function handleBooking(button) {
 
           // Map service to therapist_id (example)
           $therapists = [
-              'Yoga' => 2 // replace with correct therapist ID
+              'Yoga' => 3 // replace with correct therapist ID
           ];
           $therapist_id = $therapists['Yoga'];
 
@@ -751,7 +751,7 @@ function handleBooking2(button) {
           $booking_time = $_POST['booking_time'] ?? '';
 
           // Example: assign a therapist ID for Nutrition service
-          $therapist_id = 3; // replace with actual therapist ID from DB
+          $therapist_id = 4; // replace with actual therapist ID from DB
 
           if ($booking_date && $booking_time) {
               $stmt = $pdo->prepare("INSERT INTO bookings (customer_id, therapist_id, service, booking_date, booking_time) VALUES (?, ?, ?, ?, ?)");
@@ -874,7 +874,7 @@ function handleBooking3(button) {
           $booking_time = $_POST['booking_time'] ?? '';
 
           // Map service to therapist_id
-          $therapists = ['Physiotherapy' => 4]; // replace 4 with actual therapist ID
+          $therapists = ['Physiotherapy' => 5]; // replace 4 with actual therapist ID
           $therapist_id = $therapists['Physiotherapy'];
 
           if ($booking_date && $booking_time) {
@@ -996,7 +996,6 @@ function handleBooking4(button) {
   <div class="modal-content">
     <span class="close-btn" onclick="closeModal()">&times;</span>
     <h3>Booking Confirmed!</h3>
-    <p>Your booking has been successfully saved. See you soon!</p>
   </div>
 </div>
 
@@ -1122,82 +1121,6 @@ function goBack() {
 }
 </script>
 
-<script>
-const isCustomerLoggedIn = <?= isset($_SESSION['customer_id']) ? 'true' : 'false' ?>;
-
-function handleBooking(button) {
-    if(!isCustomerLoggedIn) {
-        alert("Please login first to book a service.");
-        window.location.href = "login.php"; 
-        return;
-    }
-
-    // Hide all booking forms
-    document.querySelectorAll('[id^="bookingFormContainer"]').forEach(form => {
-        form.classList.add('hidden');
-    });
-
-    // Show the correct booking form based on service
-    const service = button.getAttribute("data-service");
-    if(service === "Ayurveda") document.getElementById("bookingFormContainer").classList.remove("hidden");
-    else if(service === "Yoga") document.getElementById("bookingFormContainer2").classList.remove("hidden");
-    else if(service === "Nutrition") document.getElementById("bookingFormContainer3").classList.remove("hidden");
-    else if(service === "Physiotherapy") document.getElementById("bookingFormContainer4").classList.remove("hidden");
-}
-
-// Attach AJAX submit to all booking forms
-document.querySelectorAll('.bookingForm').forEach(form => {
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        if(!isCustomerLoggedIn) {
-            alert("Please login first to book a service.");
-            window.location.href = "login.php";
-            return;
-        }
-
-        const formData = new FormData(this);
-
-        fetch('booking_process.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.text())
-        .then(data => {
-            if(data.includes('success')) {
-                showBookingSuccess(); // show modal/banner
-                this.reset(); // clear form
-                const serviceSection = this.closest('[id^="Service"]');
-                if(serviceSection) serviceSection.classList.add('hidden'); // hide service section
-            } else {
-                alert('Booking failed. Please try again.');
-            }
-        })
-        .catch(err => console.error(err));
-    });
-});
-
-// Booking success modal
-function showBookingSuccess() {
-    const modal = document.getElementById('bookingModal');
-    if(modal) {
-        modal.classList.remove('hidden');
-        modal.style.display = 'block';
-    } else {
-        alert("Booking Confirmed!"); // fallback if modal not present
-    }
-}
-
-function closeBookingModal() {
-    const modal = document.getElementById('bookingModal');
-    if(modal) {
-        modal.classList.add('hidden');
-        modal.style.display = 'none';
-    }
-}
-</script>
-
-
 
 <script>
 // Chat popup functionality
@@ -1319,6 +1242,54 @@ function handleBooking(el) {
     console.error('Registration error:', err);
     alert('Error sending registration. Check console and server logs.');
   });
+}
+</script>
+
+<script>
+function submitBooking(formId, service, buttonEl) {
+    const form = document.getElementById(formId);
+    const date = form.querySelector('select[name="booking_date"]').value;
+    const time = form.querySelector('select[name="booking_time"]').value;
+
+    if(!date || !time) {
+        alert("Please select both date and time.");
+        return;
+    }
+
+    // Confirm with user
+    if (!confirm(`Book ${service} service on ${date} at ${time}?`)) return;
+
+    // Prepare POST data
+    const formData = new URLSearchParams();
+    formData.append('service', service);
+    formData.append('booking_date', date);
+    formData.append('booking_time', time);
+
+    fetch('save_booking.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData.toString()
+    })
+    .then(response => response.json().catch(() => { throw new Error('Invalid server response'); }))
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Booking successful!');
+            form.reset();
+            form.parentElement.classList.add('hidden'); // hide form container
+
+            // optionally update the booking button
+            if(buttonEl) {
+                buttonEl.textContent = 'BOOKED';
+                buttonEl.classList.add('disabled');
+                buttonEl.style.pointerEvents = 'none';
+            }
+
+            showBookingSuccess(); // show modal
+        } else {
+            alert(data.message || 'Booking failed. Please try again.');
+        }
+    })
+    .catch(err => console.error(err));
 }
 </script>
 
