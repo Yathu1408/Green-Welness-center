@@ -50,13 +50,20 @@ if ($isLoggedIn && $userRole !== 'customer') {
 
           
             <div class="nav_button" id="navButtonContainer">
-               <?php if ($isLoggedIn): ?>
-               <span>Hi, <?= htmlspecialchars($customerName) ?></span>
-                <a href="logout.php" class="btn">Logout</a>
-                <?php else: ?>
-                <button class="btn" id="loginBtn">Login</button>
-                <?php endif; ?>
-            </div>
+    <?php if ($isLoggedIn): ?>
+        <span>Hi, <?= htmlspecialchars($customerName) ?></span>
+          <a href="customer_dashboard.php" class="btn">
+            <i class="ri-user-line"></i> Profile
+        </a>
+        <a href="logout.php" class="btn">
+            <i class="ri-logout-box-r-line"></i> Logout
+        </a>
+    <?php else: ?>
+        <button class="btn" id="loginBtn">
+            <i class="ri-login-box-line"></i> Login
+        </button>
+    <?php endif; ?>
+</div>
         </nav>
 
         <div class="header_container">

@@ -51,97 +51,80 @@ header {
     z-index: 10;
     padding: 10px 0;
 }
-
+/* Navigation container */
 .nav_container {
-    max-width: var(--max-width);
-    padding: 1px 100px;
-    display: flex;
-    align-items: center;     
-    justify-content: space-between; 
-    margin-top: 10px;
+  max-width: var(--max-width);
+  padding: 1px 60px; /* reduced side padding so items center better */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
 }
 
+/* Logo */
 .nav_logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .nav_logo img {
-    height: 60px;
-    width: 150px;
-    margin-left: -60px;
+  height: 60px;
+  width: 150px;
+  margin-left: -40px;
 }
 
-.nav_logo h1 {
-    font-weight: 700;
-    font-size: 30px;
-    color: #ff9100;
-    text-transform: uppercase;
-    animation: glow 2s infinite alternate;
-
-}
-
-@keyframes glow {
-    from {
-        text-shadow: 0 0 1px rgba(255, 255, 255, 0.304);
-    }
-    to {
-        text-shadow: 0 0 1px rgba(255, 254, 252, 0.192);
-    }
-}
-
-/* Links + button */
+/* Navigation links */
 .nav_links {
-    list-style: none;
-    display: flex;
-    gap: 30px;
-    align-items: center;
+  list-style: none;
+  display: flex;
+  gap: 40px; /* increased gap between menu items */
+  align-items: center;
 }
 
 .nav_links a {
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.3s;
-     -webkit-text-stroke: 0.5px rgb(36, 165, 0); 
-      color: rgb(1, 53, 28); 
-
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+  -webkit-text-stroke: 0.5px rgb(36, 165, 0);
+  color: rgb(1, 53, 28);
 }
 
 .nav_links a:hover {
-    color: #30d616;
+  color: #30d616;
 }
 
-.btn {
-    padding: 8px 20px;
-    border: none;
-    font-size: 16px;
-    color: var(--white-color);
-    background-color: var(--button-color);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btn:hover {
-    background-color: #418501;
+/* Buttons + User Greeting */
+.nav_button {
+  display: flex;
+  align-items: center;
+  gap: 16px; /* space between greeting and buttons */
 }
 
 .nav_button span {
   font-size: 16px;
   color: #149201;
   font-weight: bold;
+  margin-right: 5px;
 }
-.nav_button span.btn  {
-    padding: 8px 20px;
-    border: none;
-    font-size: 16px;
-    color: var(--white-color);
-    background-color: var(--button-color);
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.3s;
-    text-decoration: none;
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* space between icon and text */
+  padding: 8px 16px;
+  border: none;
+  font-size: 15px;
+  color: #fff;
+  background-color: #ff9100;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background-color: #418501;
 }
 
 .header_container {
