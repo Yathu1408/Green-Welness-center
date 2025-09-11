@@ -306,7 +306,7 @@ if ($isLoggedIn && $userRole !== 'customer') {
       <h3>Detox & Rejuvenation Retreat</h3>
       <div class="programme_item">
         <i class="ri-calendar-schedule-fill"></i>
-        <span>Date: September 10 – 14, 2025</span>
+        <span>Date: September – 30, 2025</span>
       </div>
       <div class="programme_item">
         <i class="ri-user-fill"></i>
@@ -324,7 +324,7 @@ if ($isLoggedIn && $userRole !== 'customer') {
       <h3>Stress Relief & Mindfulness Workshop</h3>
       <div class="programme_item">
         <i class="ri-calendar-schedule-fill"></i>
-        <span>Date: September 20, 2025</span>
+        <span>Date: Octobor 20, 2025</span>
       </div>
       <div class="programme_item">
         <i class="ri-user-fill"></i>
@@ -404,18 +404,18 @@ if ($isLoggedIn && $userRole !== 'customer') {
             <div class="footer_quick links">
                 <h3>Quick Links</h3>
                 <ul>
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#">Services</a></li>
-                    <li><a href="#">Programmes</a></li>
-                    <li><a href="#">About Us</a></li>
-                    <li><a href="#">Contact Us</a></li>
+                <li class="link"><a href="#Home">Home</a></li>
+                <li class="link"><a href="#Service">Services</a></li>
+                <li class="link"><a href="#Programmes">Upcoming Programmes</a></li>
+                <li class="link"><a href="#About">About Us</a></li>
+                <li class="link"><a href="#Contact">Contact Us</a></li>
                 </ul>
             </div>
 
             <div class="footer_sub links">
     <h3>Quick Sub Links</h3>
     <ul>
-        <li><a href="#">Services</a></li>
+         <li class="link"><a href="#Service">Services</a></li>
         <li><a href="#" id="termsLink">Terms & Condition</a></li>
         <li><a href="#" id="privacyLink">Privacy Policy</a></li>
     </ul>
