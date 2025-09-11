@@ -413,13 +413,21 @@ if ($isLoggedIn && $userRole !== 'customer') {
             </div>
 
             <div class="footer_sub links">
-                <h3>Quick Sub Links</h3>
-                <ul>
-                    <li><a href="#">Services</a></li>
-                    <li><a href="#">Terms & Condition</a></li>
-                    <li><a href="#">Privacy Policy</a></li>
-                </ul>
-            </div>
+    <h3>Quick Sub Links</h3>
+    <ul>
+        <li><a href="#">Services</a></li>
+        <li><a href="#" id="termsLink">Terms & Condition</a></li>
+        <li><a href="#" id="privacyLink">Privacy Policy</a></li>
+    </ul>
+</div>
+                 <div id="popupModal" class="gl-modal">
+                 <div class="gl-modal-content">
+                 <button class="gl-modal-close">&times;</button>
+                 <iframe id="modalFrame" src="" frameborder="0"></iframe>
+                 </div>
+                  </div>
+
+           
 
             <div class="footer_section contact">
                 <h3>Contact Us</h3>
@@ -428,6 +436,29 @@ if ($isLoggedIn && $userRole !== 'customer') {
                 <p><i class="ri-mail-fill"></i> care@greenlife.com</p>
             </div>
         </div>
+
+        </script>
+
+<!-- Minimal CSS (green/orange accents). Add to your main CSS or inline -->
+<style>
+/* modal */
+.gl-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 9999; padding: 4% 2%; }
+.gl-modal-content { background: #fff; margin: 0 auto; width: 100%; max-width: 900px; height: 92%; border-radius: 10px; position: relative; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.25); }
+.gl-modal-close { position: absolute; top: 12px; right: 14px; background: transparent; border: none; font-size: 28px; cursor: pointer; line-height: 1; }
+.gl-modal-content iframe { width:100%; height:100%; border:0; }
+
+/* Optional: responsive */
+@media (max-width:600px){
+  .gl-modal-content { height: 96%; border-radius: 6px; }
+  .gl-modal-close { font-size: 24px; right: 10px; top: 8px; }
+}
+
+/* Footer link styling (match your site) */
+.footer_sub.links ul { list-style: none; padding:0; margin:0; }
+.footer_sub.links ul li { margin:6px 0; }
+.footer_sub.links a { text-decoration: none; color: #2e7d32; } /* green */
+.footer_sub.links a:hover { color: #e65100; } /* orange */
+</style>
 
         <div class="footer_bar">
             <div class="footer_bar_content">
@@ -1293,6 +1324,51 @@ function submitBooking(formId, service, buttonEl) {
 }
 </script>
 
+
+
+<script>
+(function(){
+  const modal = document.getElementById('popupModal');
+  const frame = document.getElementById('modalFrame');
+  const closeBtn = document.querySelector('.gl-modal-close');
+
+  function openModal(src) {
+    frame.src = src;
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+    frame.src = ''; // clear content when closed
+    document.body.style.overflow = '';
+  }
+
+  // Link the iframe to Terms
+  document.getElementById('termsLink').addEventListener('click', function(e){
+    e.preventDefault();
+    openModal('terms.php');
+  });
+
+  // Link the iframe to Privacy
+  document.getElementById('privacyLink').addEventListener('click', function(e){
+    e.preventDefault();
+    openModal('privacy.php');
+  });
+
+  closeBtn.addEventListener('click', closeModal);
+
+  // Allow closing by clicking outside
+  window.addEventListener('click', function(e){
+    if (e.target === modal) closeModal();
+  });
+
+  // Allow closing with ESC key
+  window.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') closeModal();
+  });
+})();
+</script>
 
 </body>
 </html>

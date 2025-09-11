@@ -418,12 +418,14 @@ header {
     margin-bottom: 5px;
     font-weight: 500;
     color: #008f5d;
+    text-align: center;
 }
 
 .about_us p {
     margin-bottom: 20px;
     font-size: 16px;
     color: #2d362c;
+    text-align: center;
 }
 
 .about_image {
@@ -446,18 +448,12 @@ header {
 }
 
 .section_content ul li {
-    margin-bottom: 12px;
-    padding-left: 20px;
+    margin-bottom: 20px;
+    padding-left: 440px;
     position: relative;
+    text-align: justify;
 }
-
-.section_content ul li::before {
-    content: "•";
-    position: absolute;
-    left: 0;
-    color: #046d04;
-    font-size: 20px;
-}
+   
 /* Promise Section - Modern WOW Look */
 .about_promise {
     margin: auto;
@@ -1366,7 +1362,6 @@ body {
     font-family: 'Roboto', sans-serif;
     background-color: #cbe6af47;
     margin: 0;
-    padding: 20px;
     color: #333;
 }
 
