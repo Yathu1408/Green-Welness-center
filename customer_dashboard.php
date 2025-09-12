@@ -36,8 +36,8 @@ $bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // -------------------------
 // 4️⃣ Fetch program registrations
 // -------------------------
-// Use the actual column that contains program name in 'programmes' table
-$programColumn = 'title'; // replace with your actual column name
+// 🔹 Set this to the actual column name in your programmes table that stores program name
+$programColumn = 'title'; // <-- replace 'title' with the correct column name
 
 $stmt = $pdo->prepare("
     SELECT r.status, r.notes, r.created_at, p.$programColumn AS programme_name
@@ -68,86 +68,20 @@ $inquiries = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <title>Customer Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f6f8;
-            margin: 0;
-            padding: 20px;
-        }
-
-        h2 {
-            color: #000001ff;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #f36602ff;
-            padding-bottom: 5px;
-        }
-
-        .card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        .card table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .card table th, .card table td {
-            padding: 12px;
-            text-align: left;
-        }
-
-        .card table th {
-            background: #0e54007a;
-            color: #fff;
-        }
-
-        .card table tr:nth-child(even) {
-            background: #f2f2f2;
-        }
-
-        .status {
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-weight: bold;
-            color: #fff;
-            display: inline-block;
-        }
-
-        .answered {
-            background-color: #037131ff;
-        }
-
-        .pending {
-            background-color: #d6a800ff;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .section-header i {
-            font-size: 24px;
-            color: #ff7504ff;
-        }
-
-        p.no-data {
-            text-align: center;
-            color: #7f8c8d;
-            font-style: italic;
-            margin: 20px 0;
-        }
-
-        td pre {
-            margin: 0;
-            font-family: inherit;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f8; margin: 0; padding: 20px; }
+        h2 { color: #000001ff; margin-bottom: 10px; border-bottom: 2px solid #f36602ff; padding-bottom: 5px; }
+        .card { background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 30px; }
+        .card table { width: 100%; border-collapse: collapse; }
+        .card table th, .card table td { padding: 12px; text-align: left; }
+        .card table th { background: #0e54007a; color: #fff; }
+        .card table tr:nth-child(even) { background: #f2f2f2; }
+        .status { padding: 5px 10px; border-radius: 6px; font-weight: bold; color: #fff; display: inline-block; }
+        .answered { background-color: #037131ff; }
+        .pending { background-color: #d6a800ff; }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .section-header i { font-size: 24px; color: #ff7504ff; }
+        p.no-data { text-align: center; color: #7f8c8d; font-style: italic; margin: 20px 0; }
+        td pre { margin: 0; font-family: inherit; }
     </style>
 </head>
 <body>
@@ -160,6 +94,7 @@ $inquiries = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </a>
 </div>
 
+<!-- Customer Info -->
 <div class="card">
     <div class="section-header">
         <h2><i class="ri-user-line"></i> Customer Information</h2>
@@ -173,7 +108,7 @@ $inquiries = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </table>
 </div>
 
-
+<!-- Bookings -->
 <div class="card">
     <div class="section-header">
         <h2><i class="ri-calendar-line"></i> Bookings</h2>
@@ -200,6 +135,7 @@ $inquiries = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
 </div>
 
+<!-- Program Registrations -->
 <div class="card">
     <div class="section-header">
         <h2><i class="ri-file-list-3-line"></i> Program Registrations</h2>
@@ -226,6 +162,7 @@ $inquiries = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
 </div>
 
+<!-- Inquiries -->
 <div class="card">
     <div class="section-header">
         <h2><i class="ri-mail-line"></i> Inquiries</h2>
