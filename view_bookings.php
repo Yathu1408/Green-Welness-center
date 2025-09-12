@@ -54,7 +54,7 @@ $bookings = $stmt->fetchAll();
       <tr><td colspan="7" style="text-align:center;">No bookings found.</td></tr>
     <?php endif; ?>
   </table>
-
+<div><button onclick="window.location.href='admin_dashboard.php'">Back to Dashboard</button></div>
   <style>/* styles.css */
 
 body {
@@ -133,6 +133,19 @@ table tr:last-child td {
         text-transform: uppercase;
     }
 }
+button { 
+    padding: 8px 15px; 
+    margin-left: 80px;
+    background: #ff7700ff; 
+    color: #fff;
+     border: none; 
+     border-radius: 5px; 
+     cursor: pointer; 
+     margin-top:10px;}
+button:hover { 
+    background: #003402ff;
+ }
+
 </style>
 </body>
 </html>

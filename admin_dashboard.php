@@ -87,7 +87,6 @@ if(!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin'){
                 <li><a href="view_bookings.php">View Appointments</a></li>
                 <li><a href="view_messages.php">View Messages</a></li>
                 <li><a href="create_user.php">Create Admin/Therapist</a></li>
-                <li><a href="view_programs.php">Program Registrations</a></li>
             </ul>
         </nav>
 

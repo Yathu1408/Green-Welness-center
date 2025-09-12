@@ -83,6 +83,19 @@ $types = array_unique(array_column($inquiries, 'type'));
 .hidden {
     display: none;
 }
+
+button { 
+    padding: 8px 15px; 
+    margin-left: 0px;
+    background: #ff7700ff; 
+    color: #fff;
+     border: none; 
+     border-radius: 5px; 
+     cursor: pointer; 
+     margin-top:10px;}
+button:hover { 
+    background: #003402ff;
+ }
 </style>
 </head>
 <body>
@@ -98,6 +111,7 @@ $types = array_unique(array_column($inquiries, 'type'));
             <option value="<?= htmlspecialchars($typeOption) ?>"><?= htmlspecialchars($typeOption) ?></option>
         <?php endforeach; ?>
     </select>
+    <div><button onclick="window.location.href='admin_dashboard.php'">Back to Dashboard</button></div>
 </div>
 
 <!-- ===== Inquiries ===== -->
